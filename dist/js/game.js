@@ -7,13 +7,14 @@ import { checkpointTransition, elapsedLabel, recoveryOptions, chooseSpawn, canCo
 import { obstacleArtRect, obstacleBox, playerBox as runnerBox, shieldHeadPoint, ROAD_OFFSET } from './game-geometry.js';
 import { bindAudioControls, setAudioRunning, restartMusic, playEffect } from './game-audio.js';
 import { hazardPose } from './hazard-animation.js';
-import { createBackgroundLoader } from './background-loader.js?v=webp-retry-1';
+import { createBackgroundLoader, createSceneGate } from './background-loader.js?v=decoded-scenes-2';
 import { drawHazardEffects } from './hazard-effects.js';
 import { touchAction, keyboardAction, duckActive } from './game-input.js';
 
 initPreferences();
 const $ = id => document.getElementById(id);
-const refreshAudioLabels = bindAudioControls($('music-toggle'), $('effects-toggle'), getLanguage);
+let displayedLanguage = getLanguage();
+const refreshAudioLabels = bindAudioControls($('music-toggle'), $('effects-toggle'), () => displayedLanguage);
 const canvas = $('game-canvas');
 const ctx = canvas.getContext('2d');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -53,16 +54,23 @@ const loadBackground = createBackgroundLoader(
   () => new Image(),
   (name, language) => `/assets/backgrounds/${name}${language === 'ru' ? '' : `-${language}`}.webp`
 );
-function backgroundFor(name) { return loadBackground(name, getLanguage()); }
 const endlessObstacles = [...new Set(STAGES.flatMap(stage => stage.obstacles))];
-let fallbackBackground;
-function fallbackFor() {
-  if (!fallbackBackground) {
-    fallbackBackground = new Image();
-    fallbackBackground.src = '/assets/backgrounds/cybercity-night.webp';
+const scene = createSceneGate(loadBackground, () => {
+  if (!scene.pending) {
+    displayedLanguage = scene.current.language;
+    $('toast').classList.remove('show');
   }
-  return fallbackBackground;
+  setAudioRunning(state.mode === 'running' && !scene.pending);
+  localizeStatic();
+});
+function requestScene() {
+  return scene.request(state.endless ? 'scene-endless' : stageBackgrounds[state.stage], getLanguage());
 }
+const loadingText = {
+  en: ['Loading scene…', 'Scene could not be loaded.', 'Retry'],
+  ru: ['Загрузка сцены…', 'Не удалось загрузить сцену.', 'Повторить'],
+  es: ['Cargando escena…', 'No se pudo cargar la escena.', 'Reintentar']
+};
 
 let W = 960, H = 540, floor = 442, playerX = 148;
 const state = {
@@ -74,7 +82,7 @@ const state = {
   spawnState: { cooldown: 2, lastObstacle: null, lastBonus: null, lastLane: null, laneStreak: 0 }
 };
 
-function t(key) { return TEXT[getLanguage()][key]; }
+function t(key) { return TEXT[displayedLanguage][key]; }
 function resize() {
   const small = matchMedia('(max-width: 600px)').matches;
   W = small ? 520 : 960;
@@ -90,25 +98,25 @@ resize();
 window.addEventListener('resize', resize);
 
 function localizeStatic() {
-  backgroundFor(state.endless ? 'scene-endless' : stageBackgrounds[state.stage]);
+  document.documentElement.lang = displayedLanguage;
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
-  document.title = getLanguage() === 'ru' ? 'Беги, Макс, беги — Олег Шокин' : 'Digital Development Simulator — Oleg Shokin';
+  document.title = displayedLanguage === 'ru' ? 'Беги, Макс, беги — Олег Шокин' : 'Digital Development Simulator — Oleg Shokin';
   $('year').textContent = new Date().getFullYear();
   updateThemeLabel();
   refreshAudioLabels();
   updateHUD();
-  if (state.mode !== 'running') renderOverlay();
+  renderOverlay();
 }
 function updateThemeLabel() {
   const names = { en: { system: 'Auto', light: 'Light', dark: 'Dark' }, ru: { system: 'Авто', light: 'Светлая', dark: 'Тёмная' }, es: { system: 'Auto', light: 'Claro', dark: 'Oscuro' } };
-  $('theme-name').textContent = names[getLanguage()][getTheme()];
+  $('theme-name').textContent = names[displayedLanguage][getTheme()];
 }
 $('theme-cycle').addEventListener('click', () => {
   const themes = ['system', 'light', 'dark'];
   setTheme(themes[(themes.indexOf(getTheme()) + 1) % themes.length]);
   updateThemeLabel();
 });
-document.addEventListener('app:language', localizeStatic);
+document.addEventListener('app:language', requestScene);
 document.addEventListener('app:theme', updateThemeLabel);
 
 function toast(message) {
@@ -153,6 +161,11 @@ function overlay(kicker, title, body, actions, foot = '') {
   }
 }
 function renderOverlay() {
+  if (scene.pending) {
+    const labels = loadingText[scene.current ? displayedLanguage : getLanguage()];
+    overlay('', labels[scene.failed ? 1 : 0], '', scene.failed ? [[labels[2], () => scene.retry()]] : []);
+    return;
+  }
   const mode = state.mode;
   if (mode === 'running') { $('overlay').hidden = true; return; }
   if (mode === 'start') overlay('SYSTEM NOTICE / 001', t('startTitle'), t('startBody'), [[t('startButton'), startGame], [t('endless'), startEndless, true]], t('startFoot'));
@@ -167,7 +180,7 @@ function renderOverlay() {
     overlay('', t(state.endless ? 'endlessDownTitle' : 'downTitle'), '', actions);
   }
 }
-function setMode(mode) { state.mode = mode; setAudioRunning(mode === 'running'); updateHUD(); renderOverlay(); }
+function setMode(mode) { state.mode = mode; setAudioRunning(mode === 'running' && !scene.pending); updateHUD(); renderOverlay(); }
 function resetRun(endless = false) {
   Object.assign(state, { stage: 0, score: 0, checkpointScore: 0, route: null, total: 0, endless, ending: null,
     spawnState: { cooldown: 2, lastObstacle: null, lastBonus: null, lastLane: null, laneStreak: 0 } });
@@ -179,10 +192,12 @@ function startEndless() { resetRun(true); }
 function beginStage() {
   Object.assign(state, { elapsed: 0, spawnIn: 2.4, lives: 3, shield: false, jumpHeight: 0, velocity: 0, duck: false, duckUntil: 0, invulnerable: 0, objects: [], checkpointScore: state.score, motion: newMotion() });
   setMode('running');
+  requestScene();
+  if (!state.endless && state.stage < stageBackgrounds.length - 1) loadBackground(stageBackgrounds[state.stage + 1], getLanguage());
   toast(state.endless ? t('endlessBody') : t('stageIntros')[state.stage]);
 }
 function retryStage() { if (state.endless) resetRun(true); else { state.score = state.checkpointScore; beginStage(); } }
-function selectRoute(route) { state.route = route; state.stage = 3; setMode('interlude'); }
+function selectRoute(route) { state.route = route; state.stage = 3; setMode('interlude'); requestScene(); }
 function finish(choice) {
   state.ending = chooseEnding(choice);
   if (state.ending === 'good') state.score += scoreForRoute(state.route);
@@ -204,12 +219,14 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) pause
 window.addEventListener('blur', pauseRunning);
 
 function jump() {
+  if (scene.pending) return;
   if (state.mode !== 'running' || state.jumpHeight > 0 || state.duck || state.motion.phase === 'hit') return;
   state.velocity = 790;
   state.motion = startMotion(state.motion, 'takeoff');
   playEffect('jump');
 }
 function duck(on) {
+  if (scene.pending) return;
   if (state.mode !== 'running') return;
   const next = on && state.jumpHeight === 0;
   if (next === state.duck) return;
@@ -288,6 +305,7 @@ function playerBox() {
   return runnerBox(playerX, floor, state.jumpHeight, state.duck);
 }
 function update(dt) {
+  if (scene.pending) return;
   state.ambience += dt;
   if (state.toastTimer > 0) { state.toastTimer -= dt; if (state.toastTimer <= 0) $('toast').classList.remove('show'); }
   if (state.mode !== 'running') return;
@@ -331,6 +349,7 @@ function update(dt) {
   if (state.mode === 'running' && transition) {
     if (transition.stage !== undefined) state.stage = transition.stage;
     setMode(transition.mode);
+    requestScene();
   }
   updateHUD();
 }
@@ -367,7 +386,7 @@ function drawBackgroundImage(img, stage = 0) {
   ctx.drawImage(img, sx, sy, viewW, viewH, 0, 0, W, H);
   // Only two distant tower beacons breathe gently. No gameplay information is
   // encoded in background motion, and reduced-motion removes it entirely.
-  if (!reducedMotion.matches && img !== fallbackBackground) {
+  if (!reducedMotion.matches) {
     const lamps = scene === 'scene-paperwork' ? [[114, 150], [1142, 189]] : [[115, 46], [1110, 46]];
     const phase = .24 + .20 * Math.sin(state.ambience * 1.7);
     ctx.fillStyle = `rgba(255, 141, 110, ${phase})`;
@@ -382,9 +401,7 @@ function drawBackgroundImage(img, stage = 0) {
   return true;
 }
 function drawStageBackdrop(dark) {
-  const source = backgroundFor(state.endless ? 'scene-endless' : stageBackgrounds[state.stage]);
-  const drawn = drawBackgroundImage(source, state.stage)
-    || drawBackgroundImage(fallbackFor());
+  const drawn = drawBackgroundImage(scene.current?.image, state.stage);
   if (!drawn) {
     ctx.fillStyle = dark ? '#1a2f4b' : '#5f82aa';
     ctx.fillRect(0, 0, W, H);
@@ -558,6 +575,11 @@ function drawObstacle(item) {
 function draw() {
   ctx.clearRect(0, 0, W, H);
   const dark = effectiveTheme() === 'dark';
+  if (!scene.current) {
+    ctx.fillStyle = dark ? '#101b2b' : '#edf1ef';
+    ctx.fillRect(0, 0, W, H);
+    return;
+  }
   drawStageBackdrop(dark);
   ctx.fillStyle = dark ? '#101b2bbc' : '#eff6e5d9';
   ctx.fillRect(20, 20, Math.min(W - 40, 300), 48);
@@ -592,6 +614,5 @@ function loop(now) {
   draw();
   requestAnimationFrame(loop);
 }
-localizeStatic();
-renderOverlay();
+requestScene();
 requestAnimationFrame(loop);

@@ -50,8 +50,7 @@ const substitutions = new Map([
       ["'/assets/hazards/animal-atlas.webp'", "assetUrl('/assets/hazards/animal-atlas.webp')"],
       ["'/assets/hazards/wildlife-atlas.webp'", "assetUrl('/assets/hazards/wildlife-atlas.webp')"],
       ['`/assets/hazards/${filename}.webp`', 'assetUrl(`/assets/hazards/${filename}.webp`)'],
-      ['`/assets/backgrounds/${name}${language === \'ru\' ? \'\' : `-${language}`}.webp`', 'assetUrl(`/assets/backgrounds/${name}${language === \'ru\' ? \'\' : `-${language}`}.webp`)'],
-      ["'/assets/backgrounds/cybercity-night.webp'", "assetUrl('/assets/backgrounds/cybercity-night.webp')"]
+      ['`/assets/backgrounds/${name}${language === \'ru\' ? \'\' : `-${language}`}.webp`', 'assetUrl(`/assets/backgrounds/${name}${language === \'ru\' ? \'\' : `-${language}`}.webp`)']
     ]
   ],
   [
