@@ -7,7 +7,7 @@ import { checkpointTransition, elapsedLabel, recoveryOptions, chooseSpawn, canCo
 import { obstacleArtRect, obstacleBox, playerBox as runnerBox, shieldHeadPoint, ROAD_OFFSET } from './game-geometry.js';
 import { bindAudioControls, setAudioRunning, restartMusic, playEffect } from './game-audio.js';
 import { hazardPose } from './hazard-animation.js';
-import { createBackgroundLoader } from './background-loader.js';
+import { createBackgroundLoader } from './background-loader.js?v=webp-retry-1';
 import { drawHazardEffects } from './hazard-effects.js';
 import { touchAction, keyboardAction, duckActive } from './game-input.js';
 

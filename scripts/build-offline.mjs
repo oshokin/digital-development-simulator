@@ -98,7 +98,7 @@ gameHtml = gameHtml
   .replaceAll('src="/assets/sprites/prop-10.webp"', `src="${assets['/assets/sprites/prop-10.webp']}"`)
   .replaceAll('href="/"', 'href="#"')
   .replace(
-    '<script type="module" src="/js/game.js"></script>',
+    /<script type="module" src="\/js\/game\.js(?:\?[^"]*)?"><\/script>/,
     `<script>
 {
 const __DDS_ASSETS__=${JSON.stringify(assets)};
