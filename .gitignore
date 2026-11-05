@@ -1,0 +1,26 @@
+# Dependencies and Task cache
+node_modules/
+.task/
+
+# Generated releases and temporary files
+/release/
+/site.tar.gz
+/dist/deploy-id.txt
+tmp/
+*.log
+__pycache__/
+*.py[cod]
+
+# Local environment files (keep templates versioned)
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Local tools and editor/OS leftovers
+.openai/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~

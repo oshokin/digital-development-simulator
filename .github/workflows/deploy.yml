@@ -1,0 +1,80 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Where to publish this revision
+        required: true
+        type: choice
+        options:
+          - ruweb
+          - itgarage
+          - both
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      targets: ${{ steps.targets.outputs.value }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+      - run: npm run check
+      - id: targets
+        env:
+          TARGET: ${{ inputs.target }}
+        run: |
+          case "$TARGET" in
+            ruweb) echo 'value=["ruweb"]' >> "$GITHUB_OUTPUT" ;;
+            itgarage) echo 'value=["itgarage"]' >> "$GITHUB_OUTPUT" ;;
+            both) echo 'value=["ruweb","itgarage"]' >> "$GITHUB_OUTPUT" ;;
+            *) exit 1 ;;
+          esac
+      - name: Pack this exact revision
+        env:
+          RELEASE_ID: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          printf '%s\n' "$RELEASE_ID" > dist/deploy-id.txt
+          tar -czf site.tar.gz -C dist .
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: site
+          path: site.tar.gz
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy:
+    needs: package
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJSON(needs.package.outputs.targets) }}
+    environment: ${{ matrix.target }}
+    concurrency:
+      group: deploy-${{ matrix.target }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/download-artifact@v8.0.2
+        with:
+          name: site
+      - name: Publish and smoke test
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_HOST_PUBLIC_KEY: ${{ secrets.DEPLOY_HOST_PUBLIC_KEY }}
+          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          RELEASE_ID: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+        run: bash deploy/publish.sh

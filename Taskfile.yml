@@ -1,0 +1,62 @@
+version: '3'
+
+tasks:
+  default:
+    desc: List available tasks
+    cmds:
+      - task --list
+    silent: true
+
+  dev:
+    desc: Serve the site and game locally
+    cmds:
+      - npm run dev
+
+  install:
+    desc: Install locked development dependencies
+    cmds:
+      - npm ci --include=dev
+
+  deps:
+    internal: true
+    sources:
+      - package.json
+      - package-lock.json
+    generates:
+      - node_modules/.task-deps
+    status:
+      - node --input-type=module -e "import('esbuild').then(m => m.transformSync(''))"
+    cmds:
+      - npm ci --include=dev
+      - touch node_modules/.task-deps
+
+  lint:
+    desc: Check JavaScript syntax and site references (no style linter configured)
+    cmds:
+      - for file in dist/js/*.js scripts/*.mjs tests/*.mjs; do node --check "$file" || exit; done
+      - node scripts/check.mjs
+
+  test:
+    desc: Run all tests
+    cmds:
+      - npm test
+
+  check:
+    desc: Run lint and tests sequentially
+    cmds:
+      - task: lint
+      - task: test
+
+  build:
+    desc: Validate and package dist as release/site.tar.gz (no compilation needed)
+    cmds:
+      - task: check
+      - mkdir -p release
+      - tar -czf release/site.tar.gz -C dist .
+
+  standalone:
+    desc: Install dependencies if needed and bundle the entire site into one offline HTML
+    cmds:
+      - task: deps
+      - task: check
+      - npm run build:offline

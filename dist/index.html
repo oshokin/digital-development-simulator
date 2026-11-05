@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2f1e9">
+  <meta name="description" content="Oleg Shokin — software engineer working on distributed object storage, load testing and developer tools.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Oleg Shokin — Software Engineer">
+  <meta property="og:description" content="Distributed storage, developer tools and a small browser game.">
+  <meta property="og:image" content="https://olegshokin.com/assets/images/oleg-shokin.webp">
+  <link rel="canonical" href="https://olegshokin.com/">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/css/site.css">
+  <title>Oleg Shokin — Software Engineer</title>
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+  <div class="site-shell">
+    <header class="header">
+      <a class="brand" href="#main" aria-label="Back to top"><span class="brand-mark" aria-hidden="true"><span>O</span><span>S</span></span></a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="#work" data-i18n="navWork">Work</a>
+        <a href="#about" data-i18n="navAbout">About</a>
+        <a href="#contact" data-i18n="navContact">Contact</a>
+      </nav>
+      <div class="header-tools"><div class="mini-control" role="group" aria-label="Language"><button type="button" data-lang-choice="en">EN</button><button type="button" data-lang-choice="ru">RU</button><button type="button" data-lang-choice="es">ES</button></div><button class="theme-toggle" type="button" id="theme-cycle" aria-label="Switch appearance" title="Switch appearance">◐ <span id="theme-name">Auto</span></button></div>
+    </header>
+
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-content">
+          <div class="eyebrow"><span class="eyebrow-line"></span><span data-i18n="eyebrow">OLEG SHOKIN / SOFTWARE ENGINEER</span></div>
+          <h1 id="hero-title"><span data-i18n="hero1">I make software</span><br><em data-i18n="hero2">for people who build software.</em></h1>
+          <p class="hero-intro" data-i18n="intro">I build backend systems and developer tools. Currently working on distributed object storage.</p>
+        </div>
+        <div class="hero-visual"><div class="photo-wrap"><img src="/assets/images/oleg-shokin.webp" alt="Portrait" width="640" height="960" fetchpriority="high"><span class="photo-corner corner-tl"></span><span class="photo-corner corner-br"></span></div><span class="visual-symbol" aria-hidden="true">✳</span></div>
+      </section>
+
+      <section class="section work-section" id="work" aria-labelledby="work-title">
+        <div class="section-heading"><h2 id="work-title" data-i18n="workTitle">Systems and tools</h2></div>
+        <div class="projects">
+          <article class="project"><div class="project-number">01</div><div class="project-main"><span class="tag" data-i18n="p1Type">CURRENT ROLE · GO / ROCKSDB</span><h3 data-i18n="p1Title">Distributed object storage</h3><p data-i18n="p1Desc">Reduce data and memory overhead, tune read performance and keep storage healthy under load.</p></div></article>
+          <article class="project"><div class="project-number">02</div><div class="project-main"><span class="tag" data-i18n="p2Type">NDA · BACKEND</span><h3 data-i18n="p2Title">Property valuation</h3><p data-i18n="p2Desc">Built a system for calculating property values.</p></div></article>
+          <article class="project"><div class="project-number">03</div><div class="project-main"><span class="tag" data-i18n="p3Type">NDA · PRODUCT</span><h3 data-i18n="p3Title">Custom CRM</h3><p data-i18n="p3Desc">Built a CRM for a private client.</p></div></article>
+          <article class="project"><div class="project-number">04</div><div class="project-main"><span class="tag" data-i18n="p4Type">LOAD TESTING · GO</span><h3 data-i18n="p4Title">xk6-kv</h3><p data-i18n="p4Desc">Mutable test data and leases for k6 virtual users, without another service.</p></div><a class="project-link" href="https://github.com/oshokin/xk6-kv" target="_blank" rel="noopener noreferrer" aria-label="xk6-kv on GitHub"><span data-i18n="source">View source</span><span aria-hidden="true">↗</span></a></article>
+          <article class="project"><div class="project-number">05</div><div class="project-main"><span class="tag" data-i18n="p5Type">DEVELOPER TOOLS</span><h3 data-i18n="p5Title">Cursor Chat Transit</h3><p data-i18n="p5Desc">Move Cursor conversations between workspaces and devices.</p></div><a class="project-link" href="https://github.com/oshokin/cursor-chat-transit" target="_blank" rel="noopener noreferrer" aria-label="Cursor Chat Transit on GitHub"><span data-i18n="source">View source</span><span aria-hidden="true">↗</span></a></article>
+        </div>
+      </section>
+
+      <section class="section about-section" id="about" aria-labelledby="about-title"><span class="section-index" data-i18n="aboutEyebrow">02 / ABOUT</span><div class="about-grid"><h2 id="about-title" data-i18n="aboutTitle">What I do</h2><div><p class="about-body" data-i18n="aboutBody">Go, PostgreSQL, RocksDB and distributed systems. I profile real workloads and fix what they reveal.</p><div class="about-aside"><span aria-hidden="true">↳</span><span data-i18n="aboutAside">READ THE CODE. MEASURE THE RESULT.</span></div></div></div></section>
+
+      <section class="game-section" aria-labelledby="game-title"><div class="game-copy"><span class="section-index" data-i18n="gameEyebrow">03 / AFTER HOURS</span><h2 id="game-title" data-i18n="gameTitle">A small game about a very large firewall.</h2><p data-i18n="gameBody">Max just wants the internet to work. The paperwork, drones and RKN-9000 have other plans.</p><a class="button button-lime" href="/play/"><span data-i18n="gameButton">Play Digital Development Simulator</span><span aria-hidden="true">↗</span></a><small data-i18n="gameNote">No sign-up. No SMS.</small></div><div class="game-art" aria-hidden="true"><img src="/assets/sprites/max-v2-run-2.png" alt="" loading="lazy"><span class="game-art-orbit orbit-one"></span><span class="game-art-orbit orbit-two"></span><span class="game-art-caption" data-i18n="gameCaption">RUN / JUMP / DECIDE</span></div></section>
+
+      <section class="section contact-section" id="contact" aria-labelledby="contact-title"><span class="section-index" data-i18n="contactEyebrow">04 / CONTACT</span><h2 id="contact-title" data-i18n="contactTitle">Get in touch</h2><div class="contact-links"><a href="https://github.com/oshokin" target="_blank" rel="noopener noreferrer"><span data-i18n="github">GitHub</span><span aria-hidden="true">↗</span></a><a href="https://t.me/oleganatolievich" target="_blank" rel="noopener noreferrer"><span data-i18n="telegram">Telegram</span><span aria-hidden="true">↗</span></a></div></section>
+    </main>
+
+    <footer class="footer">© <span id="year">2026</span> Oleg Shokin</footer>
+  </div>
+  <script type="module" src="/js/site.js"></script>
+  <script src="/js/year.js" defer></script>
+</body>
+</html>
