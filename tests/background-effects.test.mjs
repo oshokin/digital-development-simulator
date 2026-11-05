@@ -1,3 +1,4 @@
+import { imageDimensions } from './image-dimensions.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -6,11 +7,11 @@ import { hazardPose } from '../dist/js/hazard-animation.js';
 
 test('all six scenes have independent redrawn image assets in English and Spanish', async () => {
   for (const name of ['paperwork', 'infrastructure', 'cloud', 'whitelist', 'rkn9000', 'endless']) {
-    const original = await readFile(new URL(`../dist/assets/backgrounds/scene-${name}.png`, import.meta.url));
+    const original = await readFile(new URL(`../dist/assets/backgrounds/scene-${name}.webp`, import.meta.url));
     for (const language of ['en', 'es']) {
-      const image = await readFile(new URL(`../dist/assets/backgrounds/scene-${name}-${language}.png`, import.meta.url));
-      assert.equal(image.subarray(1, 4).toString(), 'PNG');
-      assert.ok(image.readUInt32BE(16) >= 1600 && image.readUInt32BE(20) >= 900);
+      const image = await readFile(new URL(`../dist/assets/backgrounds/scene-${name}-${language}.webp`, import.meta.url));
+      imageDimensions(image);
+      assert.ok(imageDimensions(image)[0] >= 1600 && imageDimensions(image)[1] >= 900);
       assert.notDeepEqual(image, original, `${name} ${language}`);
     }
   }
@@ -20,9 +21,9 @@ test('sand, 404 beacon, smoke and broken cable use four-frame sprite sheets', as
   for (const kind of ['hourglass', 'permit', 'server', 'cable']) {
     const seen = new Set(Array.from({ length: 32 }, (_, i) => hazardPose(kind, i / 32).frame));
     assert.deepEqual([...seen].sort(), [0, 1, 2, 3], kind);
-    const sheet = await readFile(new URL(`../dist/assets/hazards/${kind}-motion.png`, import.meta.url));
-    assert.equal(sheet.subarray(1, 4).toString(), 'PNG');
-    assert.equal(sheet.readUInt32BE(16), 2172);
+    const sheet = await readFile(new URL(`../dist/assets/hazards/${kind}-motion.webp`, import.meta.url));
+    imageDimensions(sheet);
+    assert.equal(imageDimensions(sheet)[0], 2172);
   }
 });
 

@@ -1,3 +1,4 @@
+import { imageDimensions } from './image-dimensions.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -12,10 +13,10 @@ test('run cycle uses one coherent sheet with contact, passing and flight at both
   for (const [index, frame] of RUN_CYCLE.entries()) {
     assert.equal(frame.sprite, `max-v2-run-${index}`);
     assert.ok(FOOT_ANCHOR[frame.sprite] > 0);
-    const png = await readFile(new URL(`../dist/assets/sprites/${frame.sprite}.png`, import.meta.url));
-    assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
-    assert.equal(png.readUInt32BE(16), 362);
-    assert.equal(png.readUInt32BE(20), 362);
+    const png = await readFile(new URL(`../dist/assets/sprites/${frame.sprite}.webp`, import.meta.url));
+    imageDimensions(png);
+    assert.equal(imageDimensions(png)[0], 362);
+    assert.equal(imageDimensions(png)[1], 362);
   }
   assert.ok(Math.abs(advanceMotion(newMotion(), .1, { jumpHeight: 0, duck: false, cadence: 1.5 }).runClock - .15) < 1e-10);
 });

@@ -7,6 +7,7 @@ import { checkpointTransition, elapsedLabel, recoveryOptions, chooseSpawn, canCo
 import { obstacleArtRect, obstacleBox, playerBox as runnerBox, shieldHeadPoint, ROAD_OFFSET } from './game-geometry.js';
 import { bindAudioControls, setAudioRunning, restartMusic, playEffect } from './game-audio.js';
 import { hazardPose } from './hazard-animation.js';
+import { createBackgroundLoader } from './background-loader.js';
 import { drawHazardEffects } from './hazard-effects.js';
 import { touchAction, keyboardAction, duckActive } from './game-input.js';
 
@@ -25,20 +26,20 @@ const spriteNames = [
 ];
 for (const name of spriteNames) {
   const img = new Image();
-  img.src = `/assets/sprites/${name}.png`;
+  img.src = `/assets/sprites/${name}.webp`;
   images[name] = img;
 }
 const hazardAtlas = new Image();
-hazardAtlas.src = '/assets/hazards/satirical-atlas.png';
+hazardAtlas.src = '/assets/hazards/satirical-atlas.webp';
 const animalAtlas = new Image();
-animalAtlas.src = '/assets/hazards/animal-atlas.png';
+animalAtlas.src = '/assets/hazards/animal-atlas.webp';
 const wildlifeAtlas = new Image();
-wildlifeAtlas.src = '/assets/hazards/wildlife-atlas.png';
+wildlifeAtlas.src = '/assets/hazards/wildlife-atlas.webp';
 const animationSheets = Object.fromEntries([['bears', 'bear-run'], ['creatures', 'creatures-motion'],
   ['hourglass', 'hourglass-motion'], ['permit', 'permit-motion'], ['server', 'server-motion'], ['cable', 'cable-motion'],
   ['exposed-cable', 'exposed-cable-motion'], ['coffee', 'coffee-motion']].map(([key, filename]) => {
   const img = new Image();
-  img.src = `/assets/hazards/${filename}.png`;
+  img.src = `/assets/hazards/${filename}.webp`;
   return [key, img];
 }));
 const stageBackgrounds = [
@@ -48,20 +49,20 @@ const stageBackgrounds = [
   'scene-whitelist',
   'scene-rkn9000'
 ];
-const backgroundCache = new Map();
-function backgroundFor(name) {
-  const language = getLanguage();
-  const key = `${name}:${language}`;
-  if (!backgroundCache.has(key)) {
-    const img = new Image();
-    img.src = `/assets/backgrounds/${name}${language === 'ru' ? '' : `-${language}`}.png`;
-    backgroundCache.set(key, img);
-  }
-  return backgroundCache.get(key);
-}
+const loadBackground = createBackgroundLoader(
+  () => new Image(),
+  (name, language) => `/assets/backgrounds/${name}${language === 'ru' ? '' : `-${language}`}.webp`
+);
+function backgroundFor(name) { return loadBackground(name, getLanguage()); }
 const endlessObstacles = [...new Set(STAGES.flatMap(stage => stage.obstacles))];
-const fallbackBackground = new Image();
-fallbackBackground.src = '/assets/backgrounds/cybercity-night.png';
+let fallbackBackground;
+function fallbackFor() {
+  if (!fallbackBackground) {
+    fallbackBackground = new Image();
+    fallbackBackground.src = '/assets/backgrounds/cybercity-night.webp';
+  }
+  return fallbackBackground;
+}
 
 let W = 960, H = 540, floor = 442, playerX = 148;
 const state = {
@@ -383,7 +384,7 @@ function drawBackgroundImage(img, stage = 0) {
 function drawStageBackdrop(dark) {
   const source = backgroundFor(state.endless ? 'scene-endless' : stageBackgrounds[state.stage]);
   const drawn = drawBackgroundImage(source, state.stage)
-    || drawBackgroundImage(fallbackBackground);
+    || drawBackgroundImage(fallbackFor());
   if (!drawn) {
     ctx.fillStyle = dark ? '#1a2f4b' : '#5f82aa';
     ctx.fillRect(0, 0, W, H);

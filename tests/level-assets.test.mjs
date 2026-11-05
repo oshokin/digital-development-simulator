@@ -1,3 +1,4 @@
+import { imageDimensions } from './image-dimensions.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -10,8 +11,8 @@ test('five levels use five different full-size scenes from the archive', async (
   const digests = [];
   for (const scene of scenes) {
     assert.ok(code.includes(`'${scene}'`), `stage does not load ${scene}`);
-    const bytes = await readFile(new URL(`../dist/assets/backgrounds/${scene}.png`, import.meta.url));
-    assert.equal(bytes.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+    const bytes = await readFile(new URL(`../dist/assets/backgrounds/${scene}.webp`, import.meta.url));
+    imageDimensions(bytes);
     assert.ok(bytes.length > 100_000);
     digests.push(createHash('sha256').update(bytes).digest('hex'));
   }

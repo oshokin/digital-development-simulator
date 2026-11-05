@@ -1,3 +1,4 @@
+import { imageDimensions } from './image-dimensions.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -21,10 +22,10 @@ test('nine satirical hazards use a shared pixel-art atlas and appear in stage po
   for (const name of NEW_HAZARDS) {
     assert.ok(STAGES.some(stage => stage.obstacles.includes(name)), name);
   }
-  const art = await readFile(new URL('../dist/assets/hazards/satirical-atlas.png', import.meta.url));
-  assert.equal(art.subarray(1, 4).toString(), 'PNG');
-  assert.equal(art.readUInt32BE(16), 1295);
-  assert.equal(art.readUInt32BE(20), 1214);
+  const art = await readFile(new URL('../dist/assets/hazards/satirical-atlas.webp', import.meta.url));
+  imageDimensions(art);
+  assert.equal(imageDimensions(art)[0], 1295);
+  assert.equal(imageDimensions(art)[1], 1214);
 });
 
 test('bear, orca and tiger have their own pixel-art atlas and stage entries', async () => {
@@ -32,10 +33,10 @@ test('bear, orca and tiger have their own pixel-art atlas and stage entries', as
   for (const name of ANIMAL_HAZARDS) {
     assert.ok(STAGES.some(stage => stage.obstacles.includes(name)), name);
   }
-  const art = await readFile(new URL('../dist/assets/hazards/animal-atlas.png', import.meta.url));
-  assert.equal(art.subarray(1, 4).toString(), 'PNG');
-  assert.equal(art.readUInt32BE(16), 2172);
-  assert.equal(art.readUInt32BE(20), 724);
+  const art = await readFile(new URL('../dist/assets/hazards/animal-atlas.webp', import.meta.url));
+  imageDimensions(art);
+  assert.equal(imageDimensions(art)[0], 2172);
+  assert.equal(imageDimensions(art)[1], 724);
 });
 
 test('polar bear, hang glider and crane have an atlas and campaign entries', async () => {
@@ -43,8 +44,8 @@ test('polar bear, hang glider and crane have an atlas and campaign entries', asy
   for (const name of WILDLIFE_HAZARDS) {
     assert.ok(STAGES.some(stage => stage.obstacles.includes(name)), name);
   }
-  const art = await readFile(new URL('../dist/assets/hazards/wildlife-atlas.png', import.meta.url));
-  assert.equal(art.subarray(1, 4).toString(), 'PNG');
-  assert.equal(art.readUInt32BE(16), 2172);
-  assert.equal(art.readUInt32BE(20), 724);
+  const art = await readFile(new URL('../dist/assets/hazards/wildlife-atlas.webp', import.meta.url));
+  imageDimensions(art);
+  assert.equal(imageDimensions(art)[0], 2172);
+  assert.equal(imageDimensions(art)[1], 724);
 });

@@ -11,19 +11,19 @@ for (const page of pages) {
     count++;
   }
 }
-for (const i of [9, 10, 11]) await access(resolve(root, `assets/sprites/max-${i}.png`));
-for (const i of [1, 2, 3, 4, 7, 8, 9, 10]) await access(resolve(root, `assets/sprites/prop-${i}.png`));
-for (let i = 0; i < 6; i++) await access(resolve(root, `assets/sprites/max-v2-run-${i}.png`));
-for (let i = 0; i < 3; i++) await access(resolve(root, `assets/sprites/max-v2-jump-${i}.png`));
-await access(resolve(root, 'assets/backgrounds/cybercity-night.png'));
+for (const i of [9, 10, 11]) await access(resolve(root, `assets/sprites/max-${i}.webp`));
+for (const i of [1, 2, 3, 4, 7, 8, 9, 10]) await access(resolve(root, `assets/sprites/prop-${i}.webp`));
+for (let i = 0; i < 6; i++) await access(resolve(root, `assets/sprites/max-v2-run-${i}.webp`));
+for (let i = 0; i < 3; i++) await access(resolve(root, `assets/sprites/max-v2-jump-${i}.webp`));
+await access(resolve(root, 'assets/backgrounds/cybercity-night.webp'));
 for (const scene of ['paperwork', 'infrastructure', 'cloud', 'whitelist', 'rkn9000', 'endless']) {
-  for (const language of ['en', 'es']) await access(resolve(root, `assets/backgrounds/scene-${scene}-${language}.png`));
+  for (const language of ['', '-en', '-es']) await access(resolve(root, `assets/backgrounds/scene-${scene}${language}.webp`));
 }
-await access(resolve(root, 'assets/hazards/satirical-atlas.png'));
-await access(resolve(root, 'assets/hazards/animal-atlas.png'));
-await access(resolve(root, 'assets/hazards/wildlife-atlas.png'));
-for (const atlas of ['bear-run', 'creatures-motion']) await access(resolve(root, `assets/hazards/${atlas}.png`));
-for (const kind of ['hourglass', 'permit', 'server', 'cable', 'exposed-cable', 'coffee']) await access(resolve(root, `assets/hazards/${kind}-motion.png`));
+await access(resolve(root, 'assets/hazards/satirical-atlas.webp'));
+await access(resolve(root, 'assets/hazards/animal-atlas.webp'));
+await access(resolve(root, 'assets/hazards/wildlife-atlas.webp'));
+for (const atlas of ['bear-run', 'creatures-motion']) await access(resolve(root, `assets/hazards/${atlas}.webp`));
+for (const kind of ['hourglass', 'permit', 'server', 'cable', 'exposed-cable', 'coffee']) await access(resolve(root, `assets/hazards/${kind}-motion.webp`));
 await access(resolve(root, 'assets/audio/dj-perekryt-bum-bum-bam-bam.m4a'));
 for (const effect of ['jump', 'duck', 'death', 'hit-gong', 'shield-pickup', 'shield-break', 'coffee-pickup']) await access(resolve(root, `assets/audio/${effect}.mp3`));
 const gamePage = await readFile(resolve(root, 'play/index.html'), 'utf8');
@@ -35,4 +35,4 @@ for (const obsolete of ['prop-0.png', 'max-run-1.png', 'bg-long-cityline.png']) 
   try { await access(resolve(root, `assets/${obsolete === 'bg-long-cityline.png' ? 'backgrounds' : 'sprites'}/${obsolete}`)); throw new Error(`Obsolete asset remains: ${obsolete}`); }
   catch (error) { if (error.code !== 'ENOENT') throw error; }
 }
-console.log(`Checked ${pages.length} pages, ${count} local HTML references, 12 localized scenes, 11 hazard atlases and audio files.`);
+console.log(`Checked ${pages.length} pages, ${count} local HTML references, 18 scenes, 11 hazard atlases and audio files.`);

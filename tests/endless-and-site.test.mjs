@@ -1,3 +1,4 @@
+import { imageDimensions } from './image-dimensions.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -19,8 +20,8 @@ test('endless never reaches a checkpoint, route choice or final decision', () =>
 });
 
 test('endless scene exists and the home page keeps work and controls concise', async () => {
-  const scene = await readFile(new URL('../dist/assets/backgrounds/scene-endless.png', import.meta.url));
-  assert.equal(scene.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+  const scene = await readFile(new URL('../dist/assets/backgrounds/scene-endless.webp', import.meta.url));
+  imageDimensions(scene);
   assert.ok(scene.length > 100_000);
   for (const lang of ['en', 'ru', 'es']) {
     for (const key of ['modeLabel', 'endlessLabel', 'timeLabel', 'restartEndless', 'endlessDownTitle', 'endlessDownBody']) {

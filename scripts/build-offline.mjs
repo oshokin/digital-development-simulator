@@ -45,13 +45,13 @@ const substitutions = new Map([
   [
     join(dist, 'js/game.js'),
     [
-      ['`/assets/sprites/${name}.png`', 'assetUrl(`/assets/sprites/${name}.png`)'],
-      ["'/assets/hazards/satirical-atlas.png'", "assetUrl('/assets/hazards/satirical-atlas.png')"],
-      ["'/assets/hazards/animal-atlas.png'", "assetUrl('/assets/hazards/animal-atlas.png')"],
-      ["'/assets/hazards/wildlife-atlas.png'", "assetUrl('/assets/hazards/wildlife-atlas.png')"],
-      ['`/assets/hazards/${filename}.png`', 'assetUrl(`/assets/hazards/${filename}.png`)'],
-      ['`/assets/backgrounds/${name}${language === \'ru\' ? \'\' : `-${language}`}.png`', 'assetUrl(`/assets/backgrounds/${name}${language === \'ru\' ? \'\' : `-${language}`}.png`)'],
-      ["'/assets/backgrounds/cybercity-night.png'", "assetUrl('/assets/backgrounds/cybercity-night.png')"]
+      ['`/assets/sprites/${name}.webp`', 'assetUrl(`/assets/sprites/${name}.webp`)'],
+      ["'/assets/hazards/satirical-atlas.webp'", "assetUrl('/assets/hazards/satirical-atlas.webp')"],
+      ["'/assets/hazards/animal-atlas.webp'", "assetUrl('/assets/hazards/animal-atlas.webp')"],
+      ["'/assets/hazards/wildlife-atlas.webp'", "assetUrl('/assets/hazards/wildlife-atlas.webp')"],
+      ['`/assets/hazards/${filename}.webp`', 'assetUrl(`/assets/hazards/${filename}.webp`)'],
+      ['`/assets/backgrounds/${name}${language === \'ru\' ? \'\' : `-${language}`}.webp`', 'assetUrl(`/assets/backgrounds/${name}${language === \'ru\' ? \'\' : `-${language}`}.webp`)'],
+      ["'/assets/backgrounds/cybercity-night.webp'", "assetUrl('/assets/backgrounds/cybercity-night.webp')"]
     ]
   ],
   [
@@ -94,8 +94,8 @@ gameCss = gameCss.replace("@import url('/css/tokens.css');", tokens);
 let gameHtml = await readFile(join(dist, 'play/index.html'), 'utf8');
 gameHtml = gameHtml
   .replace('<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg"><link rel="stylesheet" href="/css/game.css">', `<style>${gameCss}</style>`)
-  .replaceAll('src="/assets/sprites/prop-9.png"', `src="${assets['/assets/sprites/prop-9.png']}"`)
-  .replaceAll('src="/assets/sprites/prop-10.png"', `src="${assets['/assets/sprites/prop-10.png']}"`)
+  .replaceAll('src="/assets/sprites/prop-9.webp"', `src="${assets['/assets/sprites/prop-9.webp']}"`)
+  .replaceAll('src="/assets/sprites/prop-10.webp"', `src="${assets['/assets/sprites/prop-10.webp']}"`)
   .replaceAll('href="/"', 'href="#"')
   .replace(
     '<script type="module" src="/js/game.js"></script>',
@@ -131,7 +131,7 @@ html = html
   .replace('<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">', '')
   .replace('<link rel="stylesheet" href="/css/site.css">', `<style>${siteCss}</style>`)
   .replace('src="/assets/images/oleg-shokin.webp"', `src="${assets['/assets/images/oleg-shokin.webp']}"`)
-  .replace('src="/assets/sprites/max-v2-run-2.png"', `src="${assets['/assets/sprites/max-v2-run-2.png']}"`)
+  .replace('src="/assets/sprites/max-v2-run-2.webp"', `src="${assets['/assets/sprites/max-v2-run-2.webp']}"`)
   .replace('href="/play/"', 'href="#play" id="offline-play"')
   .replace(
     '<script type="module" src="/js/site.js"></script>',
