@@ -5,11 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/serve.mjs",
-    "test": "node --test tests/*.test.mjs",
-    "check": "node scripts/check.mjs && npm test",
-    "build:offline": "node scripts/build-offline.mjs"
+    "build": "tsc --noEmit && node scripts/build.mjs",
+    "test": "npm run build && npm run test:unit",
+    "test:unit": "node --test tests/*.test.mjs",
+    "check": "npm run build && node scripts/check.mjs && npm run test:unit",
+    "format": "prettier --write src",
+    "build:offline": "npm run build && node scripts/build-offline.mjs"
   },
   "devDependencies": {
-    "esbuild": "^0.28.2"
+    "esbuild": "^0.28.2",
+    "prettier": "^3.9.10",
+    "typescript": "^7.0.2"
   }
 }

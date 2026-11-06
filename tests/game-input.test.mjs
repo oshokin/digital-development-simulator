@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { touchAction, keyboardAction, duckActive } from '../dist/js/game-input.js';
+import { touchAction, keyboardAction, duckActive } from '../dist/play/js/game-input.js';
 
 test('visible upper half jumps, visible lower half ducks at any canvas size', () => {
   for (const bounds of [{ top: 100, height: 540 }, { top: 220, height: 350 }]) {

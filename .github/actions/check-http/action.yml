@@ -1,0 +1,28 @@
+name: Check nginx HTTP delivery
+description: Verify built files through an isolated nginx instance.
+runs:
+  using: composite
+  steps:
+    - name: Start nginx and verify HTTP delivery
+      shell: bash
+      run: |
+        set -euo pipefail
+        export COMPOSE_PROJECT_NAME="dds-ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}"
+        export DDS_PORT=18088
+        docker compose -f deploy/compose.local.yml up -d --wait --wait-timeout 120
+        docker compose -f deploy/compose.local.yml exec -T nginx nginx -t
+        node scripts/check-http.mjs http://127.0.0.1:18088/
+    - name: Show nginx failure logs
+      if: failure()
+      shell: bash
+      env:
+        COMPOSE_PROJECT_NAME: dds-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}
+        DDS_PORT: '18088'
+      run: docker compose -f deploy/compose.local.yml logs --no-color
+    - name: Remove isolated nginx instance
+      if: always()
+      shell: bash
+      env:
+        COMPOSE_PROJECT_NAME: dds-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}
+        DDS_PORT: '18088'
+      run: docker compose -f deploy/compose.local.yml down --remove-orphans

@@ -10,7 +10,7 @@ test('music and effects have independent controls; the four new effects play at 
   };
   const saved = new Map();
   globalThis.localStorage = { getItem: key => saved.get(key), setItem: (key, value) => saved.set(key, value) };
-  const { bindAudioControls, setAudioRunning, playEffect } = await import('../dist/js/game-audio.js');
+  const { bindAudioControls, setAudioRunning, playEffect } = await import('../dist/play/js/game-audio.js');
   const button = () => ({
     listeners: {}, attributes: {}, classList: { toggle() {} },
     addEventListener(event, callback) { this.listeners[event] = callback; },
@@ -21,23 +21,23 @@ test('music and effects have independent controls; the four new effects play at 
   const effectsButton = button();
   bindAudioControls(musicButton, effectsButton, () => 'en');
   setAudioRunning(true);
-  assert.equal(tracks.get('/assets/audio/dj-perekryt-bum-bum-bam-bam.m4a').playCount, 1);
+  assert.equal(tracks.get('/assets/game/audio/background-music.m4a').playCount, 1);
 
-  for (const name of ['hit-gong', 'shield-pickup', 'shield-break', 'coffee-pickup']) {
+  for (const [name, file] of Object.entries({ jump: 'player-jump', duck: 'player-duck', 'hit-gong': 'player-hit', 'shield-pickup': 'shield-pickup', 'shield-break': 'shield-break', 'coffee-pickup': 'coffee-pickup' })) {
     playEffect(name);
-    assert.equal(tracks.get(`/assets/audio/${name}.mp3`).playCount, 1, name);
+    assert.equal(tracks.get(`/assets/game/audio/${file}.mp3`).playCount, 1, name);
   }
   effectsButton.click();
   assert.equal(effectsButton.attributes['aria-pressed'], 'false');
   playEffect('hit-gong');
-  assert.equal(tracks.get('/assets/audio/hit-gong.mp3').playCount, 1);
-  assert.equal(tracks.get('/assets/audio/dj-perekryt-bum-bum-bam-bam.m4a').pauseCount, 0);
+  assert.equal(tracks.get('/assets/game/audio/player-hit.mp3').playCount, 1);
+  assert.equal(tracks.get('/assets/game/audio/background-music.m4a').pauseCount, 0);
 
   effectsButton.click();
   playEffect('death');
-  assert.equal(tracks.get('/assets/audio/death.mp3').playCount, 1);
-  assert.ok(tracks.get('/assets/audio/hit-gong.mp3').pauseCount > 0);
+  assert.equal(tracks.get('/assets/game/audio/player-death.mp3').playCount, 1);
+  assert.ok(tracks.get('/assets/game/audio/player-hit.mp3').pauseCount > 0);
   musicButton.click();
   assert.equal(musicButton.attributes['aria-pressed'], 'false');
-  assert.equal(tracks.get('/assets/audio/dj-perekryt-bum-bum-bam-bam.m4a').pauseCount, 1);
+  assert.equal(tracks.get('/assets/game/audio/background-music.m4a').pauseCount, 1);
 });

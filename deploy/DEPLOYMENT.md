@@ -1,46 +1,97 @@
-# Публикация двух независимых копий
+# Deploy to two independent servers
 
-Репозиторий изначально пуст: пока вы не загрузите этот проект в `master`, CI/CD на GitHub нет. В архиве готовы два workflow: `Check` проверяет PR и push в `master`; `Deploy` запускается только вручную через **Actions → Deploy → Run workflow** и предлагает `ruweb`, `itgarage` или `both`. Оба сервера получают один и тот же проверенный архив; каждый хранит собственные релизы и работает независимо. На сервере Node.js и Git не нужны.
+The archive serves `index.html` at `/` and `play/index.html` at `/play/`. Portfolio modules and styles live in `site/`, game code in `play/`, and shared tokens, preferences, and year in `shared/`. Build TypeScript locally or in CI with `npm run build` before packaging `dist/` (`task build` also validates it). Keep the archive root as the web root; deployment requires no compilation, Node.js, or new routing rules.
 
-## Один раз на каждом VPS
+`Check` runs on pull requests and pushes to `master`. Run `Deploy` manually through Actions → Deploy → Run workflow; select `ruweb`, `itgarage`, or `both`. Both servers receive the same checked archive and keep independent releases. Neither Node.js nor Git is required on the servers.
 
-1. Настройте SSH-доступ для отдельного непривилегированного пользователя (в примерах `ddsdeploy`), добавьте его публичный ключ в `~ddsdeploy/.ssh/authorized_keys`. Не используйте root и личный SSH-ключ.
-2. Создайте каталог, доступный этому пользователю:
+Both workflows wait for healthy Docker nginx, run `nginx -t`, and verify HTTP
+delivery before packaging. The shared action uses a unique Compose project and
+port 18088, prints logs on failure, and always removes its stack; the local
+preview on port 8088 is unaffected. `npm run check` builds once and runs static
+checks and unit tests; standalone `npm test` still builds first.
+
+## Local Docker verification
+
+From the repository root (requires Docker Compose and installed npm dependencies):
+
+```bash
+npm run check
+docker compose -f deploy/compose.local.yml up -d --wait
+docker compose -f deploy/compose.local.yml exec -T nginx nginx -t
+node scripts/check-http.mjs
+```
+
+Open http://127.0.0.1:8088/ or http://127.0.0.1:8088/play/. The dedicated
+container uses a pinned official stable Nginx image, the exact deployment
+server/limit configurations, and read-only `dist/`; it binds only to loopback.
+Set `DDS_PORT=8089` before the Compose command to change the port, and pass
+`http://127.0.0.1:8089/` to the HTTP checker. Rebuild after source changes.
+The HTTP checker validates every built file (including all localized scenes,
+sprites and audio), headers, routing and range requests; it does not test visual
+rendering or browser interaction.
+
+Stop and remove only this local stack:
+
+```bash
+docker compose -f deploy/compose.local.yml down
+```
+
+## VPS setup
+
+Repeat for each server:
+
+1. Create a dedicated unprivileged SSH user, such as `ddsdeploy`. Add the deployment public key to `~ddsdeploy/.ssh/authorized_keys`. Do not use root or a personal key.
+2. Create the deployment directories:
 
    ```bash
    sudo install -d -m 755 -o ddsdeploy -g ddsdeploy /srv/digital-development-simulator
    sudo -u ddsdeploy mkdir -p /srv/digital-development-simulator/{incoming,releases}
    ```
 
-3. В существующем блоке Nginx для сайта установите `root /srv/digital-development-simulator/current;` и сохраните действующие настройки HTTPS. Образец для домена — `deploy/nginx-olegshokin.conf`; лимиты из `deploy/nginx-http-limits.conf` относятся к контексту `http`. Для второго VPS используйте его собственный блок Nginx и адрес; не копируйте `server_name olegshokin.com`. При первом деплое `current` появится автоматически. После правки конфигурации: `sudo nginx -t && sudo systemctl reload nginx`. В дальнейшем workflow меняет только файлы, Nginx перезапускать не нужно.
-4. Сверьте публичный ключ SSH самого сервера через доверенный доступ к консоли VPS: `sudo cat /etc/ssh/ssh_host_ed25519_key.pub`. Это ключ **хоста**, отличный от ключа пользователя для входа.
+3. Set `root /srv/digital-development-simulator/current;` in the site's Nginx server block. Keep existing HTTPS settings. Use `deploy/nginx-olegshokin.conf` as a reference; `deploy/nginx-http-limits.conf` belongs in the `http` context. Use each server's own address and `server_name`. The first deployment creates `current`.
+4. Preserve the reference config's regex order: hidden-file denial precedes static routing, and `/play/` must not use `^~`. Static code/asset trees (including unknown extensions) and recognized static extensions return 404 when missing, bypass page rate limits, and cache successful responses for seven days. Pages retain HTML fallback and rate limits.
+5. Validate and reload Nginx: `sudo nginx -t && sudo systemctl reload nginx`. Content deployments do not require a reload.
+6. Verify the server's SSH host public key through a trusted VPS console: `sudo cat /etc/ssh/ssh_host_ed25519_key.pub`. This is not the deployment user's key.
 
-## Настройки GitHub
+## GitHub settings
 
-Создайте в Settings → Environments два окружения с точными именами `ruweb` и `itgarage`. В **каждом** окружении отдельно заполните одноимённые секреты:
+Create environments named `ruweb` and `itgarage` under Settings → Environments. Set these secrets separately in each environment:
 
-| Secret | Значение |
-| --- | --- |
-| `DEPLOY_HOST` | Текущий IP или DNS-имя **этого** VPS. При переезде меняйте здесь. |
-| `DEPLOY_USER` | Имя SSH-пользователя, например `ddsdeploy`. |
-| `DEPLOY_SSH_KEY` | Приватный ключ пользователя, публичная часть которого разрешена на этом VPS. |
-| `DEPLOY_HOST_PUBLIC_KEY` | Публичный ключ SSH-хоста в виде `ssh-ed25519 AAAA...`, сверенный через консоль VPS. |
+- `DEPLOY_HOST`: that server's IP address or DNS name.
+- `DEPLOY_USER`: SSH user, such as `ddsdeploy`.
+- `DEPLOY_SSH_KEY`: deployment user's private key.
+- `DEPLOY_HOST_PUBLIC_KEY`: verified host public key, formatted as `ssh-ed25519 AAAA...`.
 
-В **Variables** каждого окружения задайте `SITE_URL`: `https://olegshokin.com` для RU-WEB и реальный `http://<IP>` или HTTPS-адрес для IT-GARAGE. При смене IP второго сервера обновите `DEPLOY_HOST` и `SITE_URL`; если меняется и ключ хоста — также `DEPLOY_HOST_PUBLIC_KEY`. Необязательная переменная `DEPLOY_PORT` задаёт SSH-порт, по умолчанию 22. Секреты не попадают в исходники и архив. Публикация разрешена только из `master`. Если хотите дополнительное ручное подтверждение, настройте protection rules для окружений.
+Set these environment variables:
 
-Сгенерируйте отдельный ключ для GitHub Actions на своей машине командой `ssh-keygen -t ed25519 -f ./dds-deploy-key -C dds-deploy`; публичную часть внесите на VPS, приватную — в секрет. Не коммитьте этот ключ. Убедитесь, что `ssh` и `scp` доступны с GitHub-hosted runner на SSH-порту VPS, а сайт доступен по `SITE_URL` снаружи.
+- `SITE_URL`: `https://olegshokin.com` for RU-WEB; the public HTTP or HTTPS URL for IT-GARAGE.
+- `DEPLOY_PORT` (optional): SSH port; defaults to 22.
 
-## Первый запуск и следующие релизы
+When a server address changes, update `DEPLOY_HOST` and `SITE_URL`. Update `DEPLOY_HOST_PUBLIC_KEY` if the host key changes. Deployments are restricted to `master`. Add environment protection rules if approval is required.
 
-Распакуйте архив в локальный клон, проверьте `npm run check`, затем загрузите файлы в пустой репозиторий обычным `git add`, `git commit`, `git push origin master`. Проверьте зелёный `Check`. В Actions запустите `Deploy` на `master`, сначала для одного сервера, затем для другого или обоих. Сценарий создаёт каталог `releases/<commit>-<run>`, загружает один собранный архив и атомарно меняет ссылку `current`. Предыдущая версия остаётся в `previous`. Проверка запрашивает `/`, `/play/` и `/deploy-id.txt` с публичного адреса. Если проверка не прошла, workflow завершается с ошибкой и пытается вернуть `previous` (при первом деплое прошлой версии ещё нет).
+Generate a dedicated Actions key locally:
 
-Для ручного отката на конкретном VPS под пользователем `ddsdeploy`:
+```bash
+ssh-keygen -t ed25519 -f ./dds-deploy-key -C dds-deploy
+```
+
+Install its public key on the VPS and store its private key in the environment secret. Never commit either generated key file. GitHub-hosted runners must be able to reach SSH and `SITE_URL`.
+
+## Release
+
+Push the project to `master` and confirm that `Check` passes. Run `Deploy` for one or both servers.
+
+The workflow uploads the archive to `releases/<commit>-<run>` and atomically switches the `current` symlink. The old release remains in `previous`. Public checks request `/`, `/play/`, and `/deploy-id.txt`. On failure, the workflow reports an error and attempts to restore `previous`; the first deployment has no previous release.
+
+## Rollback
+
+On the affected VPS, as `ddsdeploy`:
 
 ```bash
 cd /srv/digital-development-simulator
-readlink previous             # сначала убедитесь, что это нужный релиз
+readlink previous             # Confirm this is the intended release
 ln -s "$(readlink previous)" .rollback-next
 mv -Tf .rollback-next current
 ```
 
-Каталог `releases` намеренно не очищается автоматически: старые версии сохраняются для отката. Проверяйте свободное место и удаляйте ненужные версии вручную, оставляя `current` и `previous`. При изменении конфигурации Nginx сохраняйте резервную копию и проверяйте её отдельно от публикации контента.
+Releases are not pruned automatically. Monitor disk space and remove unused releases, keeping the targets of `current` and `previous`. Back up and validate Nginx changes separately from content deployments.

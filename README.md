@@ -1,72 +1,70 @@
 # Oleg Shokin — portfolio & Digital Development Simulator
 
-Готовый статический проект: для сайта не нужны сборка, зависимости и бэкенд. `dist/` — содержимое сайта: визитка на `/`, отдельная игра на `/play/`. Общие настройки языка и темы сохраняются в браузере. Код можно менять обычным редактором и сразу раздавать как статические файлы.
+Static portfolio at `/` and runner game at `/play/`. Author TypeScript in `src/{site,play,shared}/js`; `npm run build` strictly checks it and generates browser JavaScript in matching `dist/` directories. Deploy only `dist/`: hosting requires no Node.js, backend, or runtime dependencies. HTML, CSS and assets remain in `dist/`, with isolated site/game ownership. Language and theme preferences are saved in the browser.
 
-## Быстрый старт на компьютере
+## Local development
 
-Game backgrounds use lossy WebP (quality 85); sprites and hazard atlases use lossless WebP, retaining their dimensions and transparency. Only the current scene and selected language are requested; other scenes/languages load on demand. The neutral fallback remains available while a scene loads.
-
-For new PNG artwork, `python3 scripts/optimize-assets.py` uses build-only Pillow with WebP support and replaces a PNG only when smaller. Update references when introducing new filenames; Pillow is not a site or offline-build dependency.
-
-Нужен Node.js 22+ только для локального сервера и проверок. Необязательная сборка автономного HTML требует `npm ci`; на VPS Node.js не нужен.
+Use Node.js 22+ for the local server and checks:
 
 ```bash
+npm ci --include=dev
 npm run check
 npm run dev
 ```
 
-Откройте `http://127.0.0.1:8080/` и `http://127.0.0.1:8080/play/`. Не открывайте `dist/index.html` через `file://`: абсолютные пути `/js/...` и `/assets/...` рассчитаны на HTTP.
+Open `http://127.0.0.1:8080/` or `http://127.0.0.1:8080/play/`. Use HTTP, not `file://`: asset paths are absolute.
 
-### Task
-
-При установленном [Task](https://taskfile.dev/docs/installation) доступны короткие команды:
+With [Task](https://taskfile.dev/docs/installation):
 
 ```bash
-task              # список команд
-task dev          # локальный сервер
-task install      # принудительная установка зависимостей
-task lint         # синтаксис JS и ссылки на ресурсы, без style-linter
-task test         # тесты
-task check        # lint, затем test
-task build        # проверки → release/site.tar.gz из dist/
-task standalone   # зависимости при необходимости → проверки → автономный HTML в release/
+task             # List commands
+task dev         # Start the local server
+task install     # Reinstall dependencies
+task lint        # Check JS types, syntax and asset references
+task test        # Run tests
+task check       # Run lint and tests
+task build       # Check and package dist/ as release/site.tar.gz
+task standalone  # Install dependencies if needed, check, build offline HTML
 ```
 
-Обычный сайт не требует компиляции: `build` упаковывает готовый `dist/`.
-Task не заменяет npm-скрипты; существующий CI продолжает работать без изменений.
+Install development dependencies before building. `npm run check` compiles strict TypeScript for both applications and shared code, validates assets, and runs runtime regressions against generated modules. Domain contracts live in `src/play/js/types.ts`; compile-negative contracts live in `types/strict-regressions.ts`. Never edit generated `dist/**/*.js`. `npm run dev` builds initially and watches TypeScript changes; `npm run format` formats sources. `task build` verifies and packages generated output; `npm run build:offline` compiles before producing standalone HTML. `strict` is enabled; `exactOptionalPropertyTypes` and `noUncheckedIndexedAccess` are not.
 
-## Как заменить локальный клон
+The portfolio lists a distributed object store, two NDA projects (property valuation and CRM), xk6-kv, and Cursor Chat Transit. Private client details stay omitted.
 
-Архив содержит файлы проекта без `.git`. Сделайте копию своих локальных изменений, если они есть, затем в корне клона `oshokin/digital-development-simulator` распакуйте содержимое архива, сохранив папки `dist`, `deploy`, `scripts`, `tests`. Для пустого клона достаточно:
+## Deployment
 
-```bash
-cd digital-development-simulator
-unzip -o /путь/к/dds-gameplay-and-deploy-v14-20261105.zip
-npm run check
-git status
-```
+See [deploy/DEPLOYMENT.md](deploy/DEPLOYMENT.md) for VPS setup, GitHub secrets, deployment, and rollback. `Check` validates changes; `Deploy` runs manually with a server selection. Each VPS has separate environment secrets.
 
-Коммит и push выполняйте после собственного просмотра. Сайт в этом архиве не требует GitHub Pages, сборки или сервиса Sites.
+## Source files
 
-## Публикация
+- `dist/index.html`, `dist/site/css/site.css`, `dist/site/js/site.js`: portfolio and EN/RU/ES translations.
+- `dist/play/index.html`, `dist/play/css/game.css`, `dist/play/js/game.js`: game screen, controls, movement, rendering.
+- `dist/play/js/game-data.js`, `dist/play/js/game-world.js`, `dist/play/js/game-flow.js`: stages, dialogue, obstacles, endings, transitions.
+- `dist/play/js/game-geometry.js`: obstacle drawing and collision geometry.
+- `dist/play/js/animation.js`, `dist/play/js/game-pace.js`: character poses and acceleration.
+- `dist/play/js/hazard-animation.js`, `dist/play/js/hazard-effects.js`: obstacle animation and effects.
+- `dist/play/js/game-audio.js`: music, effects, and sound preferences.
+- `dist/shared/js/preferences.js`, `dist/shared/css/tokens.css`: shared language and theme settings.
+- `dist/assets/game/`: game audio, backgrounds, and sprites.
+- `dist/assets/site/images/`: portrait and site-owned game preview.
+- `dist/assets/shared/`: favicon shared by both pages.
 
-Пошаговая настройка двух серверов, GitHub Secrets, ручной запуск и откат описаны в [deploy/DEPLOYMENT.md](deploy/DEPLOYMENT.md). Публикация не включается автоматически при push: `Check` проверяет изменения, `Deploy` запускается вручную с выбором сервера. Для каждого VPS используются отдельные секреты окружения. Смена IP не требует правки кода.
+## Gameplay
 
-## Что где менять
+The campaign has five stages lasting 76–84 seconds each, checkpoints, a route choice after stage three, and two endings. After defeat, restart the stage or campaign. Endless mode restarts from zero and has no stage transitions.
 
-| Файл | Назначение |
-| --- | --- |
-| `dist/index.html`, `dist/css/site.css`, `dist/js/site.js` | Визитка и переводы EN / RU / ES |
-| `dist/play/index.html`, `dist/css/game.css`, `dist/js/game.js` | Игровой экран, движение, управление и графика |
-| `dist/js/game-data.js`, `dist/js/game-world.js`, `dist/js/game-flow.js` | Эпизоды, реплики, препятствия, концовки и переходы |
-| `dist/js/game-geometry.js` | Общая геометрия рисунка и столкновений препятствий |
-| `dist/js/animation.js`, `dist/js/game-pace.js` | Ключевые позы Макса и разгон |
-| `dist/js/hazard-animation.js` | Кадры и движение живых препятствий |
-| `dist/js/hazard-effects.js`, `dist/assets/backgrounds/` | Локальные эффекты и отдельно нарисованные фоны EN/RU/ES |
-| `dist/js/game-audio.js` | Музыка, раздельные настройки звука, короткие звуки прыжка и приседания |
-| `dist/js/preferences.js`, `dist/css/tokens.css` | Общие темы и выбранный язык |
-| `dist/assets/` | Фото `MT7_5565`, кадры Макса, препятствия, фон |
+Controls: Space / Up / W to jump, Down / S to duck, P to pause. On touchscreens, tap the upper half to jump; tap or hold the lower half to duck.
 
-Кампания: пять уровней по 76–84 секунды, контрольные точки, выбор маршрута после третьего и две финальные развязки. После потери жизней можно начать текущий уровень или всю кампанию заново. Бесконечный забег не переключает уровни и начинается заново с нуля. Клавиатура: пробел/↑/W — прыжок, ↓/S — приседание, P — пауза; на телефоне — касание верхней половины игрового поля для прыжка, касание нижней для короткого приседания и удержание нижней для продолжительного. Кофе и щит появляются выше головы: за ними нужно подпрыгнуть. Кофе доступен, если потеряна жизнь; щит — если действующего щита нет. Между бонусами всегда не меньше двух препятствий; соседние препятствия разные, а следующие друг за другом бонусы чередуются «кофе / щит». На каждой высоте подряд появляются максимум три препятствия; бонус не скрывает четвёртое. Для шести сцен нарисованы отдельные полноценные изображения EN, RU и ES; выбор языка меняет целый фон. Декоративные движения отключаются при системном предпочтении уменьшенной анимации. Кнопки «♫» и «FX» в шапке игры отдельно выключают музыку и эффекты; выбор сохраняется в браузере. Приложение не делает сетевых запросов после загрузки собственных файлов, кроме переходов по внешним ссылкам GitHub и Telegram.
+Jump to collect coffee or shields. Coffee appears when a life is missing; shields appear when no shield is active. Pickups alternate, with at least two obstacles between them. Consecutive obstacles differ, and no more than three appear at the same height in a row.
 
-Графические ассеты из выбранной концепции используются как кадры персонажа, предметы и отдельные фоны пяти этапов и бесконечного режима. Русские сцены сохранены, английские и испанские нарисованы заново в том же стиле без накладных субтитров. Девять сатирических препятствий собраны в `dist/assets/hazards/satirical-atlas.webp`; медведь, касатка и тигр — в `animal-atlas.webp`; белый медведь, дельтаплан и стерх — в `wildlife-atlas.webp`. Атласы `bear-run.webp`, `creatures-motion.webp`, `hourglass-motion.webp`, `permit-motion.webp`, `server-motion.webp`, `cable-motion.webp`, `exposed-cable-motion.webp` и `coffee-motion.webp` содержат по четыре кадра. Кофе дымится; второй кабель с открытыми жилами пульсирует разрядами. Дельтаплан и единый игровой дрон парят с вращением винтов; дрон сканирует землю, улитка ползёт лицом к Максу. Бонусы отмечены бирюзовым плюсом. Музыка — предоставленная пользователем запись «Бум бум бам бам» DJ ПЕРЕКРЫТ; `jump.mp3`, `duck.mp3` и `death.mp3` — предоставленные пользователем звуки. Четыре дополнительных MP3 созданы для столкновения, получения щита, разрушения щита и подбора кофе. Кофейный звук можно заменить своей записью с тем же именем `dist/assets/audio/coffee-pickup.mp3`. Для повторной генерации звуков нужны Python 3 и ffmpeg: `python3 scripts/generate-effects.py`. Портрет используется одинаковый в светлой и тёмной теме.
+Each of the six scenes has separate EN/RU/ES artwork. Reduced-motion preferences disable decorative movement. Music and effects have separate controls, saved in the browser. The site makes no external requests during play; GitHub and Telegram links open external pages.
+
+## Assets
+
+Backgrounds use lossy WebP at quality 85; sprites and obstacle atlases use lossless WebP. Only the current scene and selected language load initially. A neutral background remains visible while loading.
+
+To optimize new PNG artwork, run `python3 scripts/optimize-assets.py`. It requires Pillow with WebP support and replaces a PNG only when the result is smaller. Update references for renamed files. Pillow is not a site or offline-build dependency.
+
+Final animation WebP assets are maintained directly in `dist/assets/game/sprites/`. See the [game reference](docs/GAME.md) for gameplay rules, animation, and asset layout.
+
+Music and `player-jump.mp3`, `player-duck.mp3`, and `player-death.mp3` were supplied by the project owner. Collision, shield pickup, shield break, and coffee pickup effects are generated. Replace `dist/assets/game/audio/coffee-pickup.mp3` to use another coffee sound. Regenerate effects with `python3 scripts/generate-effects.py`; Python 3 and ffmpeg are required.

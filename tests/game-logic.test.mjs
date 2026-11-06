@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { intersects, stageForTime, chooseEnding, scoreForRoute } from '../dist/js/game-logic.js';
-import { STAGES, TEXT } from '../dist/js/game-data.js';
+import { intersects, stageForTime, chooseEnding, scoreForRoute } from '../dist/play/js/game-logic.js';
+import { STAGES, TEXT } from '../dist/play/js/game-data.js';
 
 test('jump clears low obstacle while duck clears drone', () => {
   const low = { x: 100, y: 395, w: 80, h: 47 };

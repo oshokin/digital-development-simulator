@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { intersects } from '../dist/js/game-logic.js';
-import { obstacleArtRect, obstacleBox, playerBox, shieldHeadPoint, ROAD_OFFSET } from '../dist/js/game-geometry.js';
+import { intersects } from '../dist/play/js/game-logic.js';
+import { obstacleArtRect, obstacleBox, playerBox, shieldHeadPoint, ROAD_OFFSET } from '../dist/play/js/game-geometry.js';
 
 test('a flying drone visibly clears crouching Max and hits standing Max', () => {
   const floor = 442;

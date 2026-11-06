@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#17212b">
   <meta name="description" content="Digital Development Simulator — a satirical browser runner starring Max.">
-  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg"><link rel="stylesheet" href="/css/game.css">
+  <link rel="icon" type="image/svg+xml" href="/assets/shared/favicon.svg"><link rel="stylesheet" href="/play/css/game.css">
   <title>Digital Development Simulator — Oleg Shokin</title>
 </head>
 <body>
@@ -14,10 +14,10 @@
       <div class="machine"><div class="machine-top"><div class="status"><span class="status-lamp"></span><span id="status-text">SYSTEM READY</span></div><div class="hud"><span><span id="hud-level-label">LEVEL</span> <strong id="hud-level">01/05</strong></span><span><span data-i18n="score">SCORE</span> <strong id="hud-score">0000</strong></span><span><span data-i18n="lives">LIVES</span> <strong id="hud-lives">♥ ♥ ♥</strong></span><button type="button" id="pause-button" data-i18n="pause" aria-label="Pause game">PAUSE</button></div></div>
         <div class="canvas-wrap"><canvas id="game-canvas" width="960" height="540" aria-label="Side-scrolling runner game"></canvas><div class="game-overlay" id="overlay"><div class="overlay-card"><span class="overlay-kicker" id="overlay-kicker">SYSTEM NOTICE / 001</span><h2 id="overlay-title">RUN, MAX, RUN.</h2><p id="overlay-body">The internet is still loading. Apparently it needs a stamp.</p><div id="overlay-actions" class="overlay-actions"></div><p class="overlay-foot" id="overlay-foot"></p></div></div><div class="toast" id="toast" role="status" aria-live="polite"></div></div>
         <div class="machine-bottom"><span id="scene-label">01 / THE PAPERWORK</span><span id="scene-progress">○ ○ ○ ○ ○</span><span id="route-label">ROUTE: —</span></div></div>
-      <div class="under-game"><div class="instructions"><span class="micro-label" data-i18n="controls">CONTROLS</span><p data-i18n="instructions">Space / ↑ / W jump · ↓ / S duck · P pause. Touch upper half to jump; tap lower half to duck, hold to stay low.</p></div><div class="legend"><span><img src="/assets/sprites/prop-9.webp" alt="" width="30" height="30"><span data-i18n="shield">Shield absorbs a hit</span></span><span><img src="/assets/sprites/prop-10.webp" alt="" width="30" height="30"><span data-i18n="coffee">Coffee restores a life</span></span></div></div>
+      <div class="under-game"><div class="instructions"><span class="micro-label" data-i18n="controls">CONTROLS</span><p data-i18n="instructions">Space / ↑ / W jump · ↓ / S duck · P pause. Touch upper half to jump; tap lower half to duck, hold to stay low.</p></div><div class="legend"><span><img src="/assets/game/sprites/perks/shield-legend.webp" alt="" width="30" height="30"><span data-i18n="shield">Shield absorbs a hit</span></span><span><img src="/assets/game/sprites/perks/coffee-legend.webp" alt="" width="30" height="30"><span data-i18n="coffee">Coffee restores a life</span></span></div></div>
     </main>
     <footer><span>© <span id="year">2026</span> OLEG SHOKIN</span><span data-i18n="fiction">Everyone here is an algorithm. Probably.</span><a href="/" data-i18n="portfolio">PORTFOLIO ↗</a></footer>
   </div>
-  <script type="module" src="/js/game.js?v=decoded-scenes-2"></script>
+  <script type="module" src="/play/js/game.js?v=decoded-scenes-2"></script>
 </body>
 </html>

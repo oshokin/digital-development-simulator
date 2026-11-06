@@ -2,8 +2,8 @@ import { imageDimensions } from './image-dimensions.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { checkpointTransition, elapsedLabel, recoveryOptions } from '../dist/js/game-flow.js';
-import { STAGES, TEXT } from '../dist/js/game-world.js';
+import { checkpointTransition, elapsedLabel, recoveryOptions } from '../dist/play/js/game-flow.js';
+import { STAGES, TEXT } from '../dist/play/js/game-world.js';
 
 test('endless never reaches a checkpoint, route choice or final decision', () => {
   for (let stage = 0; stage < STAGES.length; stage++) {
@@ -20,7 +20,7 @@ test('endless never reaches a checkpoint, route choice or final decision', () =>
 });
 
 test('endless scene exists and the home page keeps work and controls concise', async () => {
-  const scene = await readFile(new URL('../dist/assets/backgrounds/scene-endless.webp', import.meta.url));
+  const scene = await readFile(new URL('../dist/assets/game/backgrounds/scene-endless.webp', import.meta.url));
   imageDimensions(scene);
   assert.ok(scene.length > 100_000);
   for (const lang of ['en', 'ru', 'es']) {
@@ -36,7 +36,7 @@ test('endless scene exists and the home page keeps work and controls concise', a
   assert.ok(html.indexOf('id="theme-cycle"') < html.indexOf('<main id="main">'));
   assert.match(html, /data-i18n="gameCaption"/);
   assert.doesNotMatch(html, /data-i18n="contactBody"/);
-  const copy = await readFile(new URL('../dist/js/site.js', import.meta.url), 'utf8');
+  const copy = await readFile(new URL('../dist/site/js/site.js', import.meta.url), 'utf8');
   assert.match(copy, /Без регистрации и СМС/);
   assert.match(copy, /БЕГИ \/ ПРЫГАЙ \/ ПРИНИМАЙ РЕШЕНИЕ/);
   assert.match(copy, /CORRE \/ SALTA \/ DECIDE/);

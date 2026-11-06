@@ -11,7 +11,7 @@ import wave
 from pathlib import Path
 
 RATE = 44100
-DEST = Path(__file__).resolve().parent.parent / "dist/assets/audio"
+DEST = Path(__file__).resolve().parent.parent / "dist/assets/game/audio"
 
 
 def tone(frequency, time, decay):
@@ -85,7 +85,7 @@ def render(name, duration, generator, target):
 
 if __name__ == "__main__":
     DEST.mkdir(parents=True, exist_ok=True)
-    render("hit-gong", 1.0, lambda t, n: bell(t) + n * .18 * math.exp(-95 * t), -15)
+    render("player-hit", 1.0, lambda t, n: bell(t) + n * .18 * math.exp(-95 * t), -15)
     render("shield-pickup", .8, lambda t, n: pickup(t), -17)
     render("shield-break", .72, breaking, -16)
     render("coffee-pickup", .75, coffee, -17)

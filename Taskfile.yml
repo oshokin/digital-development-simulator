@@ -26,14 +26,17 @@ tasks:
       - node_modules/.task-deps
     status:
       - node --input-type=module -e "import('esbuild').then(m => m.transformSync(''))"
+      - test -f node_modules/typescript/bin/tsc
     cmds:
       - npm ci --include=dev
       - touch node_modules/.task-deps
 
   lint:
-    desc: Check JavaScript syntax and site references (no style linter configured)
+    desc: Compile strict TypeScript and check generated site references
+    deps: [deps]
     cmds:
-      - for file in dist/js/*.js scripts/*.mjs tests/*.mjs; do node --check "$file" || exit; done
+      - npm run build
+      - for file in dist/site/js/*.js dist/play/js/*.js dist/shared/js/*.js scripts/*.mjs tests/*.mjs; do node --check "$file" || exit; done
       - node scripts/check.mjs
 
   test:
@@ -48,7 +51,7 @@ tasks:
       - task: test
 
   build:
-    desc: Validate and package dist as release/site.tar.gz (no compilation needed)
+    desc: Compile, validate and package dist as release/site.tar.gz
     cmds:
       - task: check
       - mkdir -p release

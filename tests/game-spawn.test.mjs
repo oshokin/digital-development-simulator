@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { chooseSpawn, obstacleLane, canCollectBonus } from '../dist/js/game-flow.js';
-import { STAGES } from '../dist/js/game-world.js';
+import { chooseSpawn, obstacleLane, canCollectBonus } from '../dist/play/js/game-flow.js';
+import { STAGES } from '../dist/play/js/game-world.js';
 
 test('the stage pools contain one drone type with no duplicate entry', () => {
   for (const stage of STAGES) {

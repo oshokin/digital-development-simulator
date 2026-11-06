@@ -4,9 +4,14 @@ from pathlib import Path
 from PIL import Image
 
 root = Path(__file__).resolve().parents[1]
-for category in ("backgrounds", "sprites", "hazards"):
+for category in ("backgrounds", "sprites"):
     before = after = count = 0
-    for source in sorted((root / "dist/assets" / category).glob("*.png")):
+    for source in sorted((root / "dist/assets/game" / category).rglob("*")):
+        if source.suffix.lower() not in (".png", ".webp"):
+            continue
+        # Keep existing lossy backgrounds: re-encoding would lose quality.
+        if source.suffix.lower() == ".webp" and category == "backgrounds":
+            continue
         old = source.stat().st_size
         image = Image.open(source)
         output = BytesIO()
@@ -14,8 +19,10 @@ for category in ("backgrounds", "sprites", "hazards"):
         data = output.getvalue()
         before += old
         if len(data) < old:
-            source.with_suffix(".webp").write_bytes(data)
-            source.unlink()
+            destination = source.with_suffix(".webp")
+            destination.write_bytes(data)
+            if source != destination:
+                source.unlink()
             after += len(data)
             count += 1
         else:

@@ -1,6 +1,19 @@
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
+import { spawnSync, spawn } from 'node:child_process';
+
+// Complete the first build before accepting requests; watch subsequent source edits.
+const initial = spawnSync(process.execPath, ['scripts/build.mjs'], { stdio: 'inherit' });
+if (initial.status !== 0) process.exit(initial.status || 1);
+const watcher = spawn(process.execPath, ['scripts/build.mjs', '--watch'], { stdio: 'inherit' });
+process.on('exit', () => watcher.kill());
+for (const signal of ['SIGINT', 'SIGTERM']) {
+  process.on(signal, () => {
+    watcher.kill();
+    process.exit(0);
+  });
+}
 
 const root = resolve(import.meta.dirname, '../dist');
 const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.m4a': 'audio/mp4', '.mp3': 'audio/mpeg' };
