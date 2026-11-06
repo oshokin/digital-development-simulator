@@ -1,9 +1,10 @@
 export type OverlayAction = [string, () => void, boolean?];
 import {
+  type Language,
   getLanguage,
-  getTheme,
+  themeLabel,
   effectiveTheme,
-  setTheme,
+  cycleTheme,
   initPreferences
 } from '../../shared/js/preferences.js';
 import { STAGES, TEXT } from './game-world.js';
@@ -37,12 +38,19 @@ import {
   playEffect
 } from './game-audio.js';
 import { hazardPose } from './hazard-animation.js';
+import { hazardLayouts } from './hazard-layout.js';
 import {
   createBackgroundLoader,
   createSceneGate
 } from './background-loader.js';
 import { drawHazardEffects, drawItemCue } from './hazard-effects.js';
-import { touchAction, keyboardAction, duckActive } from './game-input.js';
+import {
+  touchAction,
+  keyboardAction,
+  duckActive,
+  focusPlayfield,
+  handleGameKey
+} from './game-input.js';
 
 // Initial vertical jump velocity in canvas pixels per second.
 const JUMP_VELOCITY = 790;
@@ -74,7 +82,7 @@ const VIEWPORT = Object.freeze({
   desktopHeight: 540,
   initialFloor: 442,
   initialPlayerX: 148,
-  mobileWidth: 520,
+  mobileWidth: 640,
   mobileHeight: 650,
   floorMargin: 98,
   mobilePlayerX: 80,
@@ -136,14 +144,6 @@ const ROAD = Object.freeze({
   y: 34,
   width: 52,
   height: 4
-});
-// Sprite-sheet frame count and authored source crop rectangles in source pixels.
-const HAZARD_SHEET = Object.freeze({
-  frames: 4,
-  cableY: 210,
-  serverY: 110,
-  cableHeight: 350,
-  serverHeight: 560
 });
 // Frame time conversion in milliseconds per second and maximum simulation step in seconds.
 const FRAME_TIME = Object.freeze({
@@ -245,7 +245,7 @@ const $ = (id: string): HTMLElement => {
   return element;
 };
 
-let displayedLanguage: ReturnType<typeof getLanguage> = getLanguage();
+let displayedLanguage: Language = getLanguage();
 const refreshAudioLabels = bindAudioControls(
   $('music-toggle'),
   $('effects-toggle'),
@@ -300,6 +300,7 @@ const animationSheets = Object.fromEntries(
     ['coffee', 'coffee'],
     ['shield', 'shield'],
     ['barrier', 'barrier'],
+    ['gate', 'gate'],
     ['cone', 'cone'],
     ['fan', 'fan'],
     ['paper', 'paper'],
@@ -348,7 +349,7 @@ const spriteReady = Promise.all(
 
 const loadBackground = (
   name: string,
-  language: ReturnType<typeof getLanguage>,
+  language: Language,
   retry: boolean = false
 ) => {
   const entry = loadSceneBackground(name, language, retry);
@@ -396,6 +397,7 @@ const state: import('./types.js').GameState = {
   spawnIn: RUN_START.spawnSeconds,
   score: 0,
   checkpointScore: 0,
+  checkpointTotal: 0,
   lives: RUN_START.lives,
   shield: false,
   route: null,
@@ -456,20 +458,30 @@ function localizeStatic() {
   renderOverlay();
 }
 function updateThemeLabel() {
-  const names = {
-    en: { system: 'Auto', light: 'Light', dark: 'Dark' },
-    ru: { system: 'Авто', light: 'Светлая', dark: 'Тёмная' },
-    es: { system: 'Auto', light: 'Claro', dark: 'Oscuro' }
-  };
-  $('theme-name').textContent = names[displayedLanguage][getTheme()];
+  $('theme-name').textContent = themeLabel(displayedLanguage);
 }
 $('theme-cycle').addEventListener('click', () => {
-  const themes = ['system', 'light', 'dark'];
-  setTheme(themes[(themes.indexOf(getTheme()) + 1) % themes.length]);
+  cycleTheme();
   updateThemeLabel();
 });
 document.addEventListener('app:language', requestScene);
 document.addEventListener('app:theme', updateThemeLabel);
+
+// Bubble after the individual controls apply their settings. Keyboard-generated
+// clicks keep native focus; pointer clicks hand shortcuts back to the playfield.
+// Do this immediately even during scene loading: readiness must not later steal
+// focus from an overlay action the player has since selected.
+document.querySelector('.header-tools')?.addEventListener('click', event => {
+  if (
+    event instanceof MouseEvent &&
+    event.detail > 0 &&
+    event.target instanceof Element &&
+    event.target.closest(
+      '#music-toggle, #effects-toggle, #theme-cycle, button[data-lang-choice]'
+    )
+  )
+    focusPlayfield(canvas);
+});
 
 function toast(message: string) {
   const el = $('toast');
@@ -504,12 +516,7 @@ function updateHUD() {
             ? 'routeWhite'
             : 'routeNone'
       );
-  const pace = paceFor(
-    state.elapsed,
-    STAGES[state.stage].duration,
-    state.stage,
-    state.endless ? state.total : 0
-  );
+  const pace = paceFor(state.total);
   $('status-text').textContent =
     state.mode === 'running'
       ? `${t('statusRun')} ×${pace.multiplier.toFixed(HUD_DIGITS.pace)}`
@@ -645,12 +652,14 @@ function setMode(mode: import('./types.js').GameMode) {
   setAudioRunning(mode === 'running' && !scene.pending);
   updateHUD();
   renderOverlay();
+  if (mode === 'running') focusPlayfield(canvas);
 }
 function resetRun(endless = false) {
   Object.assign(state, {
     stage: 0,
     score: 0,
     checkpointScore: 0,
+    checkpointTotal: 0,
     route: null,
     total: 0,
     endless,
@@ -685,6 +694,7 @@ function beginStage() {
     invulnerable: 0,
     objects: [],
     checkpointScore: state.score,
+    checkpointTotal: state.total,
     motion: newMotion()
   });
   setMode('running');
@@ -697,6 +707,7 @@ function retryStage() {
   if (state.endless) resetRun(true);
   else {
     state.score = state.checkpointScore;
+    state.total = state.checkpointTotal;
     beginStage();
   }
 }
@@ -766,30 +777,18 @@ function requestDuck() {
   duck(true);
 }
 window.addEventListener('keydown', e => {
-  const action = keyboardAction(e.code);
-  if (
-    action &&
-    !['BUTTON', 'A'].includes(document.activeElement?.tagName || '')
-  )
-    e.preventDefault();
-  if (e.repeat) return;
-  if (e.code === 'PrintScreen') {
-    pauseRunning();
-    return;
-  }
-  if (e.code === 'KeyP' || e.code === 'Escape') {
-    togglePause();
-    return;
-  }
-  if (['BUTTON', 'A'].includes(document.activeElement?.tagName || '')) return;
-  if (action === 'jump') {
-    if (state.mode === 'start') startGame();
-    else jump();
-  }
-  if (action === 'duck') {
-    duckKeys.add(e.code);
-    requestDuck();
-  }
+  handleGameKey(e, canvas, document.activeElement, {
+    jump: () => {
+      if (state.mode === 'start') startGame();
+      else jump();
+    },
+    duck: code => {
+      duckKeys.add(code);
+      requestDuck();
+    },
+    pause: togglePause,
+    pauseRunning
+  });
 });
 window.addEventListener('keyup', e => {
   if (e.code === 'PrintScreen') pauseRunning();
@@ -804,7 +803,10 @@ for (const event of ['contextmenu', 'selectstart', 'dragstart']) {
 canvas.addEventListener('touchstart', e => e.preventDefault(), {
   passive: false
 });
+canvas.tabIndex = 0;
 canvas.addEventListener('pointerdown', e => {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  focusPlayfield(canvas);
   if (state.mode !== 'running' || (e.pointerType === 'mouse' && e.button !== 0))
     return;
   e.preventDefault();
@@ -869,12 +871,7 @@ function spawn() {
   state.spawnState = next;
   state.objects.push({ kind, x: W + SPAWN_MARGIN, age: 0, taken: false });
   const easy = state.stage === WHITE_ROUTE_STAGE && state.route === 'white';
-  const pace = paceFor(
-    state.elapsed,
-    stage.duration,
-    state.stage,
-    state.endless ? state.total : 0
-  );
+  const pace = paceFor(state.total);
   state.spawnIn = easy
     ? WHITE_ROUTE_SPAWN.delay + Math.random() * WHITE_ROUTE_SPAWN.jitter
     : pace.spawnDelay + Math.random() * pace.spawnJitter;
@@ -898,12 +895,7 @@ function update(dt: number) {
   state.elapsed += dt;
   state.total += dt;
   state.score += dt * RUN_SCORE_PER_SECOND;
-  const pace = paceFor(
-    state.elapsed,
-    STAGES[state.stage].duration,
-    state.stage,
-    state.endless ? state.total : 0
-  );
+  const pace = paceFor(state.total);
   state.invulnerable = Math.max(0, state.invulnerable - dt);
   if (state.velocity || state.jumpHeight) {
     state.jumpHeight += state.velocity * dt;
@@ -1089,12 +1081,7 @@ function drawStageBackdrop(dark: boolean) {
   ctx.fillStyle = dark ? '#0d1a2cd4' : '#15324eb0';
   ctx.fillRect(0, floor + ROAD_OFFSET, W, H - floor);
   ctx.fillStyle = dark ? '#5ecb7480' : '#dff7f095';
-  const pace = paceFor(
-    state.elapsed,
-    STAGES[state.stage].duration,
-    state.stage,
-    state.endless ? state.total : 0
-  );
+  const pace = paceFor(state.total);
   for (
     let x = -((state.ambience * pace.speed * ROAD.speedRatio) % ROAD.spacing);
     x < W;
@@ -1221,20 +1208,21 @@ function drawObstacle(item: import('./types.js').WorldItem) {
   if (pose.sheet) {
     const sheet = animationSheets[pose.sheet];
     if (sheet.complete && sheet.naturalWidth) {
-      const cw = sheet.naturalWidth / HAZARD_SHEET.frames;
-      const sourceY =
-        pose.sheet === 'cable'
-          ? HAZARD_SHEET.cableY
-          : pose.sheet === 'server'
-            ? HAZARD_SHEET.serverY
-            : 0;
-      const sourceH =
-        pose.sheet === 'cable'
-          ? HAZARD_SHEET.cableHeight
-          : pose.sheet === 'server'
-            ? HAZARD_SHEET.serverHeight
-            : sheet.naturalHeight;
-      ctx.drawImage(sheet, pose.frame * cw, sourceY, cw, sourceH, x, y, w, h);
+      const layout = hazardLayouts[pose.sheet];
+      const cw = sheet.naturalWidth / (layout?.frames ?? 4);
+      const sourceScaleY = h / (layout?.scaleHeight ?? sheet.naturalHeight);
+      const ground = layout?.ground[pose.frame] ?? sheet.naturalHeight;
+      ctx.drawImage(
+        sheet,
+        pose.frame * cw,
+        0,
+        cw,
+        sheet.naturalHeight,
+        x,
+        y + h - (ground - (layout?.top ?? 0)) * sourceScaleY,
+        w,
+        sheet.naturalHeight * sourceScaleY
+      );
       drawn = true;
     }
   }
@@ -1244,10 +1232,29 @@ function drawObstacle(item: import('./types.js').WorldItem) {
       ctx.translate(2 * x + w, 0);
       ctx.scale(-1, 1);
     }
-    image(item.kind, x, y, w, h);
+    const layout = hazardLayouts[item.kind];
+    const scale = h / (layout?.height ?? h);
+    image(
+      item.kind,
+      x,
+      layout?.anchor === 'center'
+        ? y + h / 2 + (layout.top - layout.height / 2) * scale
+        : y + h - ((layout?.height ?? h) - (layout?.top ?? 0)) * scale,
+      w,
+      layout ? (layout.bottom - layout.top) * scale : h
+    );
     if (item.kind === 'slowdown') ctx.restore();
-  } else if (!pose.sheet && !drawn && prop.image !== undefined)
-    image(prop.image, x, y, w, h);
+  } else if (!pose.sheet && !drawn && prop.image !== undefined) {
+    const layout = hazardLayouts[prop.image];
+    const scale = h / (layout?.height ?? h);
+    image(
+      prop.image,
+      x,
+      y + (layout?.top ?? 0) * scale,
+      w,
+      layout ? (layout.bottom - layout.top) * scale : h
+    );
+  }
   if (item.kind === 'glider' || item.kind === 'drone') {
     const centers = item.kind === 'glider' ? PROPELLER.glider : PROPELLER.drone;
     for (const [px, py] of centers) {

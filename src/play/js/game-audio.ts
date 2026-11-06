@@ -1,3 +1,5 @@
+import type { Language } from '../../shared/js/preferences.js';
+
 // Background music gain on the normalized audio volume scale.
 const MUSIC_VOLUME = 0.28;
 const music = new Audio('/assets/game/audio/background-music.m4a');
@@ -68,9 +70,7 @@ const labels = {
 export function bindAudioControls(
   musicButton: HTMLElement,
   effectsButton: HTMLElement,
-  getLanguage: () => ReturnType<
-    typeof import('../../shared/js/preferences.js').getLanguage
-  >
+  getLanguage: () => Language
 ) {
   function refresh() {
     const words = labels[getLanguage()];

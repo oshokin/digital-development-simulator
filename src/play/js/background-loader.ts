@@ -1,6 +1,5 @@
-export type Language = ReturnType<
-  typeof import('../../shared/js/preferences.js').getLanguage
->;
+import type { Language } from '../../shared/js/preferences.js';
+export type { Language } from '../../shared/js/preferences.js';
 export type BackgroundEntry = {
   image: HTMLImageElement;
   attempts: number;

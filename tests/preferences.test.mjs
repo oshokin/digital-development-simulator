@@ -1,6 +1,16 @@
+import { LANGUAGES } from '../dist/shared/js/preferences.js';
+import { DEFAULT_LANGUAGE, isLanguage, cycleTheme, themeLabel } from '../dist/shared/js/preferences.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { getLanguage, setLanguage, getTheme, setTheme, effectiveTheme } from '../dist/shared/js/preferences.js';
+
+test('supported languages preserve the explicit public contract', () => {
+  assert.deepEqual(LANGUAGES, ['en', 'ru', 'es']);
+  assert.equal(DEFAULT_LANGUAGE, 'en');
+  for (const value of LANGUAGES) assert.equal(isLanguage(value), true);
+  for (const value of [null, undefined, '', 'EN', 'fr', 0, {}, ['en']])
+    assert.equal(isLanguage(value), false);
+});
 
 test('preferences validate stored language and theme and dispatch changes', () => {
   const saved = new Map();
@@ -14,7 +24,7 @@ test('preferences validate stored language and theme and dispatch changes', () =
     assert.equal(getLanguage(), 'en');
     assert.equal(getTheme(), 'system');
     assert.equal(effectiveTheme(), 'dark');
-    for (const language of ['en', 'ru', 'es']) {
+    for (const language of LANGUAGES) {
       setLanguage(language);
       assert.equal(getLanguage(), language);
       assert.equal(document.documentElement.lang, language);
@@ -28,8 +38,17 @@ test('preferences validate stored language and theme and dispatch changes', () =
     }
     setTheme('invalid');
     assert.equal(getTheme(), 'system');
+    assert.equal(themeLabel('ru'), 'Авто');
+    cycleTheme();
+    assert.equal(getTheme(), 'light');
+    assert.equal(themeLabel('es'), 'Claro');
+    cycleTheme();
+    assert.equal(getTheme(), 'dark');
+    assert.equal(themeLabel('en'), 'Dark');
+    cycleTheme();
+    assert.equal(getTheme(), 'system');
     assert.equal(events.filter(event => event.type === 'app:language').length, 3);
-    assert.equal(events.filter(event => event.type === 'app:theme').length, 3);
+    assert.equal(events.filter(event => event.type === 'app:theme').length, 6);
     saved.set('oshokin-lang', 'invalid');
     saved.set('oshokin-theme', 'invalid');
     assert.equal(getLanguage(), 'en');

@@ -20,3 +20,31 @@ export function keyboardAction(code: string) {
 export function duckActive(held: boolean, now: number, minimumUntil: number) {
   return held || now < minimumUntil;
 }
+
+export function focusPlayfield(canvas: HTMLCanvasElement) {
+  canvas.focus({ preventScroll: true });
+}
+
+// Only the playfield owns game shortcuts. Native controls and editable content
+// retain their normal keyboard behavior, including Space/Enter activation.
+export function handleGameKey(
+  event: KeyboardEvent,
+  canvas: HTMLCanvasElement,
+  activeElement: Element | null,
+  actions: {
+    jump(): void;
+    duck(code: string): void;
+    pause(): void;
+    pauseRunning(): void;
+  }
+) {
+  if (activeElement !== canvas) return;
+  const action = keyboardAction(event.code);
+  if (action || event.code === 'KeyP' || event.code === 'Escape')
+    event.preventDefault();
+  if (event.repeat) return;
+  if (event.code === 'PrintScreen') actions.pauseRunning();
+  else if (event.code === 'KeyP' || event.code === 'Escape') actions.pause();
+  else if (action === 'jump') actions.jump();
+  else if (action === 'duck') actions.duck(event.code);
+}

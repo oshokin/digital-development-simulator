@@ -11,8 +11,24 @@ function keyboardAction(code) {
 function duckActive(held, now, minimumUntil) {
   return held || now < minimumUntil;
 }
+function focusPlayfield(canvas) {
+  canvas.focus({ preventScroll: true });
+}
+function handleGameKey(event, canvas, activeElement, actions) {
+  if (activeElement !== canvas) return;
+  const action = keyboardAction(event.code);
+  if (action || event.code === "KeyP" || event.code === "Escape")
+    event.preventDefault();
+  if (event.repeat) return;
+  if (event.code === "PrintScreen") actions.pauseRunning();
+  else if (event.code === "KeyP" || event.code === "Escape") actions.pause();
+  else if (action === "jump") actions.jump();
+  else if (action === "duck") actions.duck(event.code);
+}
 export {
   duckActive,
+  focusPlayfield,
+  handleGameKey,
   keyboardAction,
   touchAction
 };

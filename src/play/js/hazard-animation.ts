@@ -7,6 +7,7 @@ const animated: Partial<
   >
 > = {
   barrier: { sheet: 'barrier', row: 0, fps: 3 },
+  gate: { sheet: 'gate', row: 0, fps: 4 },
   fan: { sheet: 'fan', row: 0, fps: 12 },
   paper: { sheet: 'paper', row: 0, fps: 8 },
   cone: { sheet: 'cone', row: 0, fps: 8 },

@@ -1,3 +1,4 @@
+import { LANGUAGES } from '../dist/shared/js/preferences.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { intersects, stageForTime, chooseEnding, scoreForRoute } from '../dist/play/js/game-logic.js';
@@ -26,5 +27,5 @@ test('five stages advance in order and both endings remain distinct', () => {
   assert.equal(chooseEnding('committee'), 'bad');
   assert.equal(scoreForRoute('public'), 2000);
   assert.equal(scoreForRoute('white'), 0);
-  for (const lang of ['en', 'ru', 'es']) assert.equal(TEXT[lang].stageNames.length, 5);
+  for (const lang of LANGUAGES) assert.equal(TEXT[lang].stageNames.length, 5);
 });

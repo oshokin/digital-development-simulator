@@ -1,7 +1,8 @@
 import {
+  type Language,
   getLanguage,
-  getTheme,
-  setTheme,
+  themeLabel,
+  cycleTheme,
   initPreferences
 } from '../../shared/js/preferences.js';
 
@@ -162,7 +163,7 @@ const copy = {
 };
 
 export type TranslationKey = keyof typeof copy.en;
-export type Language = ReturnType<typeof getLanguage>;
+export type { Language } from '../../shared/js/preferences.js';
 export type Translation = Record<TranslationKey, string>;
 export const translations: Record<Language, Translation> = copy;
 
@@ -181,18 +182,12 @@ export function translate() {
 }
 
 function updateThemeLabel() {
-  const names = {
-    en: { system: 'Auto', light: 'Light', dark: 'Dark' },
-    ru: { system: 'Авто', light: 'Светлая', dark: 'Тёмная' },
-    es: { system: 'Auto', light: 'Claro', dark: 'Oscuro' }
-  };
   const label = document.getElementById('theme-name');
-  if (label) label.textContent = names[getLanguage()][getTheme()];
+  if (label) label.textContent = themeLabel(getLanguage());
 }
 
 document.getElementById('theme-cycle')?.addEventListener('click', () => {
-  const themes: ReturnType<typeof getTheme>[] = ['system', 'light', 'dark'];
-  setTheme(themes[(themes.indexOf(getTheme()) + 1) % themes.length]);
+  cycleTheme();
   updateThemeLabel();
 });
 

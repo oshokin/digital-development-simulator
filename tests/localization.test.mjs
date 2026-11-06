@@ -1,3 +1,4 @@
+import { LANGUAGES } from '../dist/shared/js/preferences.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
@@ -20,7 +21,7 @@ test('portfolio renders each language, unknown keys and missing optional control
       dispatchEvent: event => listeners.get(event.type)?.()
     };
     const { translations, translate } = await import('../dist/site/js/site.js');
-    for (const language of ['en', 'ru', 'es']) {
+    for (const language of LANGUAGES) {
       saved.set('oshokin-lang', language);
       translate();
       for (let i = 0; i < 3; i++) assert.equal(elements[i].textContent, translations[language][keys[i]]);

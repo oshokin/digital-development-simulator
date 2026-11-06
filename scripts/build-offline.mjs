@@ -7,6 +7,9 @@ const dist = join(root, 'dist');
 const outputDir = join(root, 'release');
 const outputFile = join(outputDir, 'digital-development-simulator-offline.html');
 
+// Both embedded pages need the same file:// storage fallback.
+const storageShim = `const localStorage=(()=>{try{const storage=globalThis.localStorage;storage.getItem('__dds_test__');return storage}catch{return{getItem(){return null},setItem(){},removeItem(){}}}})();`;
+
 const mimeTypes = {
   '.m4a': 'audio/mp4',
   '.mp3': 'audio/mpeg',
@@ -101,7 +104,7 @@ gameHtml = gameHtml
 {
 const __DDS_ASSETS__=${JSON.stringify(assets)};
 function assetUrl(path){return __DDS_ASSETS__[path]||path}
-const localStorage=(()=>{try{const storage=globalThis.localStorage;storage.getItem('__dds_test__');return storage}catch{return{getItem(){return null},setItem(){},removeItem(){}}}})();
+${storageShim}
 ${gameBundle.outputFiles[0].text}
 document.querySelectorAll('.back, footer a').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();location.reload()}));
 }
@@ -135,7 +138,7 @@ html = html
     '<script type="module" src="/site/js/site.js"></script>',
     `<script>
 {
-const localStorage=(()=>{try{const storage=globalThis.localStorage;storage.getItem('__dds_test__');return storage}catch{return{getItem(){return null},setItem(){},removeItem(){}}}})();
+${storageShim}
 ${siteBundle.outputFiles[0].text}
 const offlineGameHtml=${serializedGame};
 document.getElementById('offline-play').addEventListener('click',event=>{event.preventDefault();document.open();document.write(offlineGameHtml);document.close()});

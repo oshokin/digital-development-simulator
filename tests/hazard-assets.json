@@ -1,0 +1,626 @@
+{
+  "archive": {
+    "frames": 1,
+    "width": 431,
+    "height": 405,
+    "top": 0,
+    "bottom": 405,
+    "anchor": "ground",
+    "scaleHeight": 405,
+    "ground": [
+      405
+    ],
+    "originalSha256": "b5daf39c189f13cbd1ab6a5afb8c8a91bdb5d3fb5091629c676623d5ef2534cf",
+    "rgbaSha256": "0ccfe9cd783675e928ea55f59e088685e400845865f52cda5490e63bffe01c58",
+    "visibleBounds": [
+      [
+        19,
+        2,
+        431,
+        371
+      ]
+    ],
+    "sha256": "b5daf39c189f13cbd1ab6a5afb8c8a91bdb5d3fb5091629c676623d5ef2534cf"
+  },
+  "barrier": {
+    "frames": 4,
+    "width": 1448,
+    "height": 362,
+    "top": 48,
+    "bottom": 315,
+    "anchor": "ground",
+    "scaleHeight": 362,
+    "ground": [
+      362,
+      362,
+      362,
+      362
+    ],
+    "originalSha256": "0695e101b587a655b3cb485133b2375dae12ac6e060289715abbc229b76207f8",
+    "rgbaSha256": "f8bc04c02ec492b88f461cd2a40c577b4e97003998459046dfc43b68624cc174",
+    "visibleBounds": [
+      [
+        19,
+        0,
+        1419,
+        267
+      ]
+    ],
+    "sha256": "3982822880ef17ee85bf19e632605389a291bb77b4826a12283ff5a8db33c56f"
+  },
+  "bear": {
+    "frames": 4,
+    "width": 1774,
+    "height": 443,
+    "top": 15,
+    "bottom": 443,
+    "anchor": "ground",
+    "scaleHeight": 443,
+    "ground": [
+      443,
+      443,
+      443,
+      443
+    ],
+    "originalSha256": "715038f1c4b9c4c0871213fca08b8eebeec2132b58d32710b364c40f5327ba18",
+    "rgbaSha256": "7ecf425a7e33a3c482a1db21c68167e30806017ebea72b99ee48dfd4e6ce24b7",
+    "visibleBounds": [
+      [
+        56,
+        26,
+        1724,
+        392
+      ]
+    ],
+    "sha256": "5faf39686793fdd85d330da8a714d896f91967b842a468af65ee847b21d2c59e"
+  },
+  "cable": {
+    "frames": 4,
+    "width": 2172,
+    "height": 724,
+    "top": 0,
+    "bottom": 724,
+    "anchor": "ground",
+    "scaleHeight": 350,
+    "ground": [
+      530,
+      530,
+      530,
+      530
+    ],
+    "originalSha256": "5ab2838f70671df793e33b1483272781ef6129b11007937780a3109a9c282a29",
+    "rgbaSha256": "590ec80a659121ebd1e3f65c4f83b03cb872d551a3ccede143f40ad69bcacb54",
+    "visibleBounds": [
+      [
+        16,
+        174,
+        2157,
+        530
+      ]
+    ],
+    "sha256": "5ab2838f70671df793e33b1483272781ef6129b11007937780a3109a9c282a29"
+  },
+  "calendar": {
+    "frames": 1,
+    "width": 362,
+    "height": 362,
+    "top": 68,
+    "bottom": 314,
+    "anchor": "ground",
+    "scaleHeight": 362,
+    "ground": [
+      362
+    ],
+    "originalSha256": "f8ee66f4d0be052f6c74ad66ca1a4a61cf84ee9d73286b1d6251573af3432f8d",
+    "rgbaSha256": "61205a66a3c8738499669418cdb70b77b261d75d47a28d1ab0ed7e63e28b68c3",
+    "visibleBounds": [
+      [
+        31,
+        0,
+        327,
+        246
+      ]
+    ],
+    "sha256": "9a0f5218f4b2d47f7aabd21f1f942c047c8319129c2f28c62c1cd4ac6ddca39b"
+  },
+  "cone": {
+    "frames": 4,
+    "width": 1448,
+    "height": 362,
+    "top": 99,
+    "bottom": 303,
+    "anchor": "ground",
+    "scaleHeight": 362,
+    "ground": [
+      362,
+      362,
+      362,
+      362
+    ],
+    "originalSha256": "a8bdc8f30dc051f6309b33f969df26508fa1de15c09b6f45db414109ca9a3d30",
+    "rgbaSha256": "09e1f842ee55c6c4976696cbba438f1e6cc54539cca8e9acbb450412a42ce210",
+    "visibleBounds": [
+      [
+        30,
+        1,
+        1425,
+        204
+      ]
+    ],
+    "sha256": "3233652f80a7d5cb66bcdf50922705a341c6e805734fc7360b3892bc5b852507"
+  },
+  "crane": {
+    "frames": 4,
+    "width": 1448,
+    "height": 362,
+    "top": 0,
+    "bottom": 362,
+    "anchor": "ground",
+    "scaleHeight": 362,
+    "ground": [
+      362,
+      362,
+      362,
+      362
+    ],
+    "originalSha256": "1bd734469af156dab6c6ad7d87719fa1ed2e400673dc4105a83a7fc8b52a5468",
+    "rgbaSha256": "2a7ad67ba9ea52b25440c15d0691f6b19f082c255066f61830c1f63af0d47dd4",
+    "visibleBounds": [
+      [
+        24,
+        14,
+        1424,
+        322
+      ]
+    ],
+    "sha256": "1bd734469af156dab6c6ad7d87719fa1ed2e400673dc4105a83a7fc8b52a5468"
+  },
+  "crate": {
+    "frames": 4,
+    "width": 1448,
+    "height": 362,
+    "top": 14,
+    "bottom": 314,
+    "anchor": "ground",
+    "scaleHeight": 362,
+    "ground": [
+      362,
+      362,
+      362,
+      362
+    ],
+    "originalSha256": "75c41d2da06fe0259189a6708b06eb23e392ee4dfc50ab962ab77a8824fcb25c",
+    "rgbaSha256": "8b826a9e293bc948179b5ff37cfee12eb2baa1a9b9752b86fd404d09c78de7e9",
+    "visibleBounds": [
+      [
+        34,
+        0,
+        1416,
+        299
+      ]
+    ],
+    "sha256": "57512803880ce0e2925eed16339aeb5316237c5896e354ba9bbdb73713de471a"
+  },
+  "drone": {
+    "frames": 1,
+    "width": 432,
+    "height": 404,
+    "top": 17,
+    "bottom": 404,
+    "anchor": "center",
+    "scaleHeight": 404,
+    "ground": [
+      404
+    ],
+    "originalSha256": "5e64859bc5ce5d27f4978c97b1029c76c79c2a04b1fa429bcdf9a94ab1368256",
+    "rgbaSha256": "e051b4763ea7e5cd20e7ef1f15c1771b96cb23f5766b4b58b2d5af35b504e9b9",
+    "visibleBounds": [
+      [
+        10,
+        26,
+        422,
+        356
+      ]
+    ],
+    "sha256": "231a7195c1067aea46130130de819712eb8aea3b5477e748515a35060401d742"
+  },
+  "exposed-cable": {
+    "frames": 4,
+    "width": 2172,
+    "height": 724,
+    "top": 19,
+    "bottom": 709,
+    "anchor": "ground",
+    "scaleHeight": 724,
+    "ground": [
+      724,
+      724,
+      724,
+      724
+    ],
+    "originalSha256": "31f479551082075bf2412fda3bba995c192c1bc3b31023150fd0b65dcc82ebab",
+    "rgbaSha256": "0c353e06c4ad76da83e03f72102ce6cb8f4287bb7d8c7975221be9d5f0a3bfcd",
+    "visibleBounds": [
+      [
+        48,
+        160,
+        2131,
+        527
+      ]
+    ],
+    "sha256": "c6372adaf504f1c0d0c94faced72654470ee40e7036b1c0fcc07a9b8a6534fe0"
+  },
+  "fan": {
+    "frames": 4,
+    "width": 1448,
+    "height": 362,
+    "top": 15,
+    "bottom": 311,
+    "anchor": "ground",
+    "scaleHeight": 362,
+    "ground": [
+      362,
+      362,
+      362,
+      362
+    ],
+    "originalSha256": "4619ee96e306cfacb6b7467661fa9ab23591a162628926453b72b5acdcf40764",
+    "rgbaSha256": "65bf81da8afe5965bf3f07edc2d14177d771e426a30c54bf98b66be7c22d7213",
+    "visibleBounds": [
+      [
+        28,
+        0,
+        1423,
+        296
+      ]
+    ],
+    "sha256": "c3989a6b84d5ef53b5e5a090de09e88a7d9752976965544d316d8df8336315ca"
+  },
+  "gate": {
+    "frames": 4,
+    "width": 1728,
+    "height": 405,
+    "top": 0,
+    "bottom": 405,
+    "anchor": "ground",
+    "scaleHeight": 405,
+    "ground": [
+      405,
+      405,
+      405,
+      405
+    ],
+    "originalSha256": "924e78577f19c9f426381c7acc1b7c23b5ad61129eebf113be023fbdd9b10f83",
+    "rgbaSha256": "67df8af4689c8808b615ab6c8503deeb74e1faaab1c9ca48e53ee360bf30d006",
+    "visibleBounds": [
+      [
+        11,
+        27,
+        406,
+        370
+      ],
+      [
+        11,
+        27,
+        406,
+        370
+      ],
+      [
+        11,
+        27,
+        406,
+        370
+      ],
+      [
+        11,
+        27,
+        406,
+        370
+      ]
+    ],
+    "sha256": "f969a74e9e278f40af53376e040fc9b0e43202a1795759ff0011056cd96b32fb",
+    "framePixelHashes": [
+      "2daff8c4de124428affbff82627237f0d1a2af807d6637959d222ae3737db0c0",
+      "1b74f577284a6d2b08a77f1650816a1f07bc2cd7f22ed705d9a4206689834ac7",
+      "ca0edc6e783a55fd5a0b15286b828a443e4390f3414a4ea6221ac8ffde511617",
+      "eed2699f7107636dee743ef798bfbf1910573322ab911d7727910b4af3962e24"
+    ]
+  },
+  "glider": {
+    "frames": 1,
+    "width": 724,
+    "height": 724,
+    "top": 21,
+    "bottom": 724,
+    "anchor": "center",
+    "scaleHeight": 724,
+    "ground": [
+      724
+    ],
+    "originalSha256": "e9d2b46c96438cc66c28aa57bd2ea1a6ed14180e06ea1fa9dcd48a793864c097",
+    "rgbaSha256": "bd64c634d3098cc84e5753b9d0c7d984a73f1c156969a29bbccaf251c9800fe6",
+    "visibleBounds": [
+      [
+        10,
+        86,
+        700,
+        625
+      ]
+    ],
+    "sha256": "a02f13c79a39b5b1d95ce948a30a498e61e339c1a6a454b1e790c316fc665e0e"
+  },
+  "hourglass": {
+    "frames": 4,
+    "width": 2172,
+    "height": 724,
+    "top": 30,
+    "bottom": 724,
+    "anchor": "ground",
+    "scaleHeight": 724,
+    "ground": [
+      724,
+      724,
+      724,
+      724
+    ],
+    "originalSha256": "bcb78d6de1c5c5eabf1beafc711b11ec1cb1086785e8973564ae9566342c6e62",
+    "rgbaSha256": "f7d09d13d389921dcef58790bc8a49d79c7fe801a992061ea413dd163b4ab32f",
+    "visibleBounds": [
+      [
+        57,
+        5,
+        2117,
+        630
+      ]
+    ],
+    "sha256": "ee1331afc1ae266a4d74e4bc5a7161afb1f1ec97bd3eae2d2fd728dc64cc75ba"
+  },
+  "lock": {
+    "frames": 1,
+    "width": 432,
+    "height": 404,
+    "top": 23,
+    "bottom": 404,
+    "anchor": "ground",
+    "scaleHeight": 404,
+    "ground": [
+      404
+    ],
+    "originalSha256": "74aa7fee15622f7c20c9321d5c09de8c8a886595b888455b646138f85fe5b09a",
+    "rgbaSha256": "e6dce94dc847feb00217133529e45d3b6c373b22384ac839091bd137716b0a21",
+    "visibleBounds": [
+      [
+        22,
+        9,
+        399,
+        370
+      ]
+    ],
+    "sha256": "7a01b51f508061ade4aefe87a429f8663199d9fcdacd17b43499bad5f1e0e2b2"
+  },
+  "orca": {
+    "frames": 4,
+    "width": 1448,
+    "height": 362,
+    "top": 8,
+    "bottom": 362,
+    "anchor": "ground",
+    "scaleHeight": 362,
+    "ground": [
+      362,
+      362,
+      362,
+      362
+    ],
+    "originalSha256": "036edbc7aaf4856a4861c974b9ed33a90812162a13fdab43767edebc42fdd88b",
+    "rgbaSha256": "a7eccc8c56cf20666113e328d540b46fc5397761197921f3e46c9d8f926fd9fd",
+    "visibleBounds": [
+      [
+        46,
+        36,
+        1420,
+        321
+      ]
+    ],
+    "sha256": "325d665d366a5736654dd8dc700cbc5f238b8a0da3b8dffb8153db81ec26281c"
+  },
+  "paper": {
+    "frames": 4,
+    "width": 1448,
+    "height": 362,
+    "top": 37,
+    "bottom": 335,
+    "anchor": "ground",
+    "scaleHeight": 362,
+    "ground": [
+      362,
+      362,
+      362,
+      362
+    ],
+    "originalSha256": "e8fdc4bfcb47a7106b63c4154f6493b2bce96e605cf1347cf22d43ecb824c054",
+    "rgbaSha256": "638666f7a56766a922685c3f1a01ec59f007926872be92ea853e94a7ab3c49b4",
+    "visibleBounds": [
+      [
+        33,
+        0,
+        1410,
+        297
+      ]
+    ],
+    "sha256": "2c381e71e2c7c5e56ba45090d7de910665ca05d63edbb4e6e7b96d59a992cc8a"
+  },
+  "permit": {
+    "frames": 4,
+    "width": 2172,
+    "height": 724,
+    "top": 19,
+    "bottom": 708,
+    "anchor": "ground",
+    "scaleHeight": 724,
+    "ground": [
+      724,
+      724,
+      724,
+      724
+    ],
+    "originalSha256": "2000aae7ed317845f55c2e64a1fc714f1ad80e9cc76c683ff0fb15786892e06c",
+    "rgbaSha256": "6ea665eba9550022617a62a263bface4929852aee07f88033dde3783463a8630",
+    "visibleBounds": [
+      [
+        18,
+        47,
+        2154,
+        610
+      ]
+    ],
+    "sha256": "489cfb3bbb3965a0f5b1a8e10f185ca8d838c27644e37dc4f10c748256927f74"
+  },
+  "polar-bear": {
+    "frames": 4,
+    "width": 1774,
+    "height": 444,
+    "top": 0,
+    "bottom": 444,
+    "anchor": "ground",
+    "scaleHeight": 444,
+    "ground": [
+      444,
+      444,
+      444,
+      444
+    ],
+    "originalSha256": "69655b7bd36a905fc6af1d5117295fc466b553f7834819137652979335fb8e69",
+    "rgbaSha256": "253d9ff2a2035ac44b9a873dbff5aae10a7d1ef146bed4c4c35dc22cfb1b554d",
+    "visibleBounds": [
+      [
+        25,
+        28,
+        1739,
+        378
+      ]
+    ],
+    "sha256": "69655b7bd36a905fc6af1d5117295fc466b553f7834819137652979335fb8e69"
+  },
+  "server": {
+    "frames": 4,
+    "width": 2172,
+    "height": 724,
+    "top": 0,
+    "bottom": 724,
+    "anchor": "ground",
+    "scaleHeight": 560,
+    "ground": [
+      653,
+      654,
+      653,
+      653
+    ],
+    "originalSha256": "afd5f99a0a52f53aa2b2e1a8daac7a45fba38f436eaf0a535d792012bea479dc",
+    "rgbaSha256": "3b3b2a4e55c931a8db1cd833b4bb807386f1da47e17e756d6f24c1927cdd84ce",
+    "visibleBounds": [
+      [
+        42,
+        0,
+        2114,
+        654
+      ]
+    ],
+    "sha256": "afd5f99a0a52f53aa2b2e1a8daac7a45fba38f436eaf0a535d792012bea479dc"
+  },
+  "slowdown": {
+    "frames": 1,
+    "width": 432,
+    "height": 405,
+    "top": 0,
+    "bottom": 405,
+    "anchor": "ground",
+    "scaleHeight": 405,
+    "ground": [
+      405
+    ],
+    "originalSha256": "f57aeae69d61587196db78dff8030b0355141c31f5cd17fd2e8c0bd6a1cadd9e",
+    "rgbaSha256": "2ff317cad4a3c8d03c1483880cf509b51605452fb7a8bf21693a61da9824a9fa",
+    "visibleBounds": [
+      [
+        0,
+        12,
+        407,
+        363
+      ]
+    ],
+    "sha256": "f57aeae69d61587196db78dff8030b0355141c31f5cd17fd2e8c0bd6a1cadd9e"
+  },
+  "sovereign": {
+    "frames": 1,
+    "width": 432,
+    "height": 405,
+    "top": 0,
+    "bottom": 405,
+    "anchor": "ground",
+    "scaleHeight": 405,
+    "ground": [
+      405
+    ],
+    "originalSha256": "13b721ed1a9c184d2ec518c87e005387bfae475fcb26c7895ef82bd090385ffe",
+    "rgbaSha256": "04787ecf24fdf8a0bd194eecddea45722a2f45497292de2378369529b4154603",
+    "visibleBounds": [
+      [
+        16,
+        2,
+        398,
+        363
+      ]
+    ],
+    "sha256": "13b721ed1a9c184d2ec518c87e005387bfae475fcb26c7895ef82bd090385ffe"
+  },
+  "stamp": {
+    "frames": 1,
+    "width": 431,
+    "height": 404,
+    "top": 0,
+    "bottom": 404,
+    "anchor": "ground",
+    "scaleHeight": 404,
+    "ground": [
+      404
+    ],
+    "originalSha256": "cec4ef25f7e31dc8eba6f2df32112778ce34c1041b043e003a7153113e99bee3",
+    "rgbaSha256": "4406ed22849146069b82623789873ef10057b4f4b81f7cb2324b13027c7a4f3f",
+    "visibleBounds": [
+      [
+        28,
+        11,
+        402,
+        396
+      ]
+    ],
+    "sha256": "cec4ef25f7e31dc8eba6f2df32112778ce34c1041b043e003a7153113e99bee3"
+  },
+  "tiger": {
+    "frames": 4,
+    "width": 1448,
+    "height": 362,
+    "top": 0,
+    "bottom": 362,
+    "anchor": "ground",
+    "scaleHeight": 362,
+    "ground": [
+      362,
+      362,
+      362,
+      362
+    ],
+    "originalSha256": "ea5e0dbdf8f4eebd2ace82c3cdce01e35db76d544102a8aad29b6875fc7688bb",
+    "rgbaSha256": "12475db9fc69b7249bd723502c6b19f16a883fe5339ff2d6d51198c3b35a6071",
+    "visibleBounds": [
+      [
+        28,
+        7,
+        1422,
+        341
+      ]
+    ],
+    "sha256": "ea5e0dbdf8f4eebd2ace82c3cdce01e35db76d544102a8aad29b6875fc7688bb"
+  }
+}

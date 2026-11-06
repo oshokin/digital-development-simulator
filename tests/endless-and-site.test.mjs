@@ -1,3 +1,4 @@
+import { LANGUAGES } from '../dist/shared/js/preferences.js';
 import { imageDimensions } from './image-dimensions.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -23,7 +24,7 @@ test('endless scene exists and the home page keeps work and controls concise', a
   const scene = await readFile(new URL('../dist/assets/game/backgrounds/scene-endless.webp', import.meta.url));
   imageDimensions(scene);
   assert.ok(scene.length > 100_000);
-  for (const lang of ['en', 'ru', 'es']) {
+  for (const lang of LANGUAGES) {
     for (const key of ['modeLabel', 'endlessLabel', 'timeLabel', 'restartEndless', 'endlessDownTitle', 'endlessDownBody']) {
       assert.ok(TEXT[lang][key], `${lang}.${key}`);
     }

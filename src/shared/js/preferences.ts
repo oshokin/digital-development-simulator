@@ -1,13 +1,21 @@
 const themeKey = 'oshokin-theme';
 const langKey = 'oshokin-lang';
 
+export const LANGUAGES = ['en', 'ru', 'es'] as const;
+export type Language = (typeof LANGUAGES)[number];
+export const DEFAULT_LANGUAGE: Language = 'en';
+
+export function isLanguage(value: unknown): value is Language {
+  return LANGUAGES.some(language => language === value);
+}
+
 export function getLanguage() {
   const saved = localStorage.getItem(langKey);
-  return saved === 'en' || saved === 'ru' || saved === 'es' ? saved : 'en';
+  return isLanguage(saved) ? saved : DEFAULT_LANGUAGE;
 }
 
 export function setLanguage(lang: string | null) {
-  if (lang !== 'en' && lang !== 'ru' && lang !== 'es') return;
+  if (!isLanguage(lang)) return;
   localStorage.setItem(langKey, lang);
   document.documentElement.lang = lang;
   document.dispatchEvent(new CustomEvent('app:language', { detail: lang }));
@@ -40,6 +48,21 @@ export function setTheme(theme: string) {
   if (!['system', 'light', 'dark'].includes(theme)) return;
   localStorage.setItem(themeKey, theme);
   applyTheme();
+}
+
+export function cycleTheme() {
+  const themes = ['system', 'light', 'dark'] as const;
+  setTheme(themes[(themes.indexOf(getTheme()) + 1) % themes.length]);
+}
+
+const themeNames = {
+  en: { system: 'Auto', light: 'Light', dark: 'Dark' },
+  ru: { system: 'Авто', light: 'Светлая', dark: 'Тёмная' },
+  es: { system: 'Auto', light: 'Claro', dark: 'Oscuro' }
+} satisfies Record<Language, Record<ReturnType<typeof getTheme>, string>>;
+
+export function themeLabel(language: Language) {
+  return themeNames[language][getTheme()];
 }
 
 export function initPreferences() {

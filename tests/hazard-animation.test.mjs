@@ -28,7 +28,7 @@ test('fan, plane and disk use animated strips without static render fallbacks', 
 test('the plane strip belongs to cone, not paper or calendar', async () => {
   const game = await readFile(new URL('../dist/play/js/game.js', import.meta.url), 'utf8');
   const strip = await readFile(new URL('../dist/assets/game/sprites/hazards/cone.webp', import.meta.url));
-  assert.deepEqual(imageDimensions(strip), [1448, 362]);
+  assert.deepEqual(imageDimensions(strip), [1448, 204]);
   assert.equal(hazardPose('cone', .2).sheet, 'cone');
   assert.equal(hazardPose('calendar', .2).sheet, null);
   assert.equal(hazardPose('calendar', .2).bob, 0);
@@ -67,9 +67,9 @@ test('coffee steam and the exposed cable each have four timed poses', async () =
 
 test('each animal selects its own single-row four-frame strip', async () => {
   const animals = [
-    ['bear', 'bear', [1774, 443]],
+    ['bear', 'bear', [1774, 428]],
     ['polarBear', 'polar-bear', [1774, 444]],
-    ['orca', 'orca', [1448, 362]],
+    ['orca', 'orca', [1448, 354]],
     ['tiger', 'tiger', [1448, 362]],
     ['crane', 'crane', [1448, 362]]
   ];

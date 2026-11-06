@@ -26,11 +26,6 @@ const ORBIT = Object.freeze({
   halfSize: 2,
   size: 4
 });
-const GATE_BEACON = Object.freeze({
-  centers: [0.19, 0.81],
-  y: 0.24,
-  radius: 3.7
-});
 const CABLE_SPARK = Object.freeze({
   x: 0.58,
   y: 0.68,
@@ -152,20 +147,6 @@ function drawHazardEffects(ctx, kind, rect, age, reducedMotion = false) {
         ORBIT.size,
         ORBIT.size
       );
-    }
-  }
-  if (kind === "gate") {
-    ctx.fillStyle = `rgba(255, 186, 40, ${fx.beacon})`;
-    for (const px of GATE_BEACON.centers) {
-      ctx.beginPath();
-      ctx.arc(
-        x + w * px,
-        y + h * GATE_BEACON.y,
-        GATE_BEACON.radius,
-        0,
-        Math.PI * 2
-      );
-      ctx.fill();
     }
   }
   if (kind === "cable" && fx.spark) {

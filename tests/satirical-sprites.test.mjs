@@ -4,6 +4,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import { STAGES, NEW_HAZARDS } from '../dist/play/js/game-world.js';
 import { hazardPose } from '../dist/play/js/hazard-animation.js';
 import { imageDimensions } from './image-dimensions.mjs';
+import { hazardLayouts } from '../dist/play/js/hazard-layout.js';
 
 test('all campaign and endless satirical kinds own exactly one sprite source', async () => {
   const directory = new URL('../dist/assets/game/sprites/hazards/', import.meta.url);
@@ -27,7 +28,7 @@ test('all campaign and endless satirical kinds own exactly one sprite source', a
       const col = index % 3, row = Math.floor(index / 3);
       assert.deepEqual(imageDimensions(art), [
         Math.floor((col + 1) * 1295 / 3) - Math.floor(col * 1295 / 3),
-        Math.floor((row + 1) * 1214 / 3) - Math.floor(row * 1214 / 3)
+        hazardLayouts[kind].bottom - hazardLayouts[kind].top
       ]);
     }
   }

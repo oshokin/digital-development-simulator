@@ -1,8 +1,8 @@
 // Generated from src/ by npm run build. Do not edit.
 import {
   getLanguage,
-  getTheme,
-  setTheme,
+  themeLabel,
+  cycleTheme,
   initPreferences
 } from "../../shared/js/preferences.js";
 const copy = {
@@ -156,17 +156,11 @@ function translate() {
   updateThemeLabel();
 }
 function updateThemeLabel() {
-  const names = {
-    en: { system: "Auto", light: "Light", dark: "Dark" },
-    ru: { system: "Авто", light: "Светлая", dark: "Тёмная" },
-    es: { system: "Auto", light: "Claro", dark: "Oscuro" }
-  };
   const label = document.getElementById("theme-name");
-  if (label) label.textContent = names[getLanguage()][getTheme()];
+  if (label) label.textContent = themeLabel(getLanguage());
 }
 document.getElementById("theme-cycle")?.addEventListener("click", () => {
-  const themes = ["system", "light", "dark"];
-  setTheme(themes[(themes.indexOf(getTheme()) + 1) % themes.length]);
+  cycleTheme();
   updateThemeLabel();
 });
 initPreferences();

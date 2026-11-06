@@ -15,5 +15,5 @@ test('barrier lamp strip cycles without moving its art or collision geometry', a
     assert.equal(pose.squash, 1);
   }
   const strip = await readFile(new URL('../dist/assets/game/sprites/hazards/barrier.webp', import.meta.url));
-  assert.deepEqual(imageDimensions(strip), [1448, 362]);
+  assert.deepEqual(imageDimensions(strip), [1448, 267]);
 });

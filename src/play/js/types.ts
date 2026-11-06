@@ -85,6 +85,7 @@ export interface GameState {
   spawnIn: number;
   score: number;
   checkpointScore: number;
+  checkpointTotal: number;
   lives: number;
   shield: boolean;
   route: Route | null;
