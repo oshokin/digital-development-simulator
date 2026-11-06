@@ -19,15 +19,19 @@ With [Task](https://taskfile.dev/docs/installation):
 ```bash
 task             # List commands
 task dev         # Start the local server
-task install     # Reinstall dependencies
-task lint        # Check JS types, syntax and asset references
 task test        # Run tests
-task check       # Run lint and tests
-task build       # Check and package dist/ as release/site.tar.gz
+task check       # Build once, check formatting, validate and test
+task build       # Compile and generate dist/
+task package     # Check and package dist/ as release/site.tar.gz
+task format      # Format sources
+task nginx:up    # Build and start local nginx
+task nginx:check # Check nginx configuration and HTTP delivery
+task nginx:logs  # Follow local nginx logs
+task nginx:down  # Stop local nginx
 task standalone  # Install dependencies if needed, check, build offline HTML
 ```
 
-Install development dependencies before building. `npm run check` compiles strict TypeScript for both applications and shared code, validates assets, and runs runtime regressions against generated modules. Domain contracts live in `src/play/js/types.ts`; compile-negative contracts live in `types/strict-regressions.ts`. Never edit generated `dist/**/*.js`. `npm run dev` builds initially and watches TypeScript changes; `npm run format` formats sources. `task build` verifies and packages generated output; `npm run build:offline` compiles before producing standalone HTML. `strict` is enabled; `exactOptionalPropertyTypes` and `noUncheckedIndexedAccess` are not.
+Tasks install locked development dependencies when needed; direct npm commands require installation first. `npm run check` compiles strict TypeScript for both applications and shared code, validates assets, and runs runtime regressions against generated modules. Domain contracts live in `src/play/js/types.ts`; compile-negative contracts live in `types/strict-regressions.ts`. Never edit generated `dist/**/*.js`. `npm run dev` builds initially and watches TypeScript changes; `npm run format` formats sources. `task package` verifies and packages generated output; `npm run build:offline` compiles before producing standalone HTML. `strict` is enabled; `exactOptionalPropertyTypes` and `noUncheckedIndexedAccess` are not.
 
 The portfolio lists a distributed object store, two NDA projects (property valuation and CRM), xk6-kv, and Cursor Chat Transit. Private client details stay omitted.
 

@@ -10,12 +10,8 @@ tasks:
   dev:
     desc: Serve the site and game locally
     cmds:
+      - task: deps
       - npm run dev
-
-  install:
-    desc: Install locked development dependencies
-    cmds:
-      - npm ci --include=dev
 
   deps:
     internal: true
@@ -27,31 +23,57 @@ tasks:
     status:
       - node --input-type=module -e "import('esbuild').then(m => m.transformSync(''))"
       - test -f node_modules/typescript/bin/tsc
+      - test -f node_modules/prettier/bin/prettier.cjs
     cmds:
       - npm ci --include=dev
       - touch node_modules/.task-deps
 
-  lint:
-    desc: Compile strict TypeScript and check generated site references
-    deps: [deps]
+  validate:
+    internal: true
     cmds:
-      - npm run build
       - for file in dist/site/js/*.js dist/play/js/*.js dist/shared/js/*.js scripts/*.mjs tests/*.mjs; do node --check "$file" || exit; done
       - node scripts/check.mjs
 
   test:
     desc: Run all tests
     cmds:
+      - task: deps
       - npm test
 
-  check:
-    desc: Run lint and tests sequentially
+  test:unit:
+    internal: true
     cmds:
-      - task: lint
-      - task: test
+      - task: deps
+      - npm run test:unit
+
+  format:
+    desc: Format TypeScript sources
+    cmds:
+      - task: deps
+      - npm run format
+
+  format:check:
+    internal: true
+    cmds:
+      - task: deps
+      - npx --no-install prettier --check src
+
+  check:
+    desc: Build once, check formatting and validate the site and tests
+    cmds:
+      - task: build
+      - task: format:check
+      - task: validate
+      - task: test:unit
 
   build:
-    desc: Compile, validate and package dist as release/site.tar.gz
+    desc: Compile strict TypeScript and generate dist
+    cmds:
+      - task: deps
+      - npm run build
+
+  package:
+    desc: Validate and package dist as release/site.tar.gz
     cmds:
       - task: check
       - mkdir -p release
@@ -60,6 +82,27 @@ tasks:
   standalone:
     desc: Install dependencies if needed and bundle the entire site into one offline HTML
     cmds:
-      - task: deps
       - task: check
-      - npm run build:offline
+      - node scripts/build-offline.mjs
+
+  nginx:up:
+    desc: Build and start local nginx
+    cmds:
+      - task: build
+      - docker compose -f deploy/compose.local.yml up -d --wait
+
+  nginx:check:
+    desc: Check running nginx configuration and HTTP responses
+    cmds:
+      - docker compose -f deploy/compose.local.yml exec -T nginx nginx -t
+      - node scripts/check-http.mjs "http://127.0.0.1:${DDS_PORT:-8088}/"
+
+  nginx:logs:
+    desc: Follow local nginx logs
+    cmds:
+      - docker compose -f deploy/compose.local.yml logs -f nginx
+
+  nginx:down:
+    desc: Stop local nginx
+    cmds:
+      - docker compose -f deploy/compose.local.yml down

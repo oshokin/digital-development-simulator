@@ -1,6 +1,6 @@
 # Deploy to two independent servers
 
-The archive serves `index.html` at `/` and `play/index.html` at `/play/`. Portfolio modules and styles live in `site/`, game code in `play/`, and shared tokens, preferences, and year in `shared/`. Build TypeScript locally or in CI with `npm run build` before packaging `dist/` (`task build` also validates it). Keep the archive root as the web root; deployment requires no compilation, Node.js, or new routing rules.
+The archive serves `index.html` at `/` and `play/index.html` at `/play/`. Portfolio modules and styles live in `site/`, game code in `play/`, and shared tokens, preferences, and year in `shared/`. `task build` compiles TypeScript; `task package` validates and creates `release/site.tar.gz`. Keep the archive root as the web root; deployment requires no compilation, Node.js, or new routing rules.
 
 `Check` runs on pull requests and pushes to `master`. Run `Deploy` manually through Actions → Deploy → Run workflow; select `ruweb`, `itgarage`, or `both`. Both servers receive the same checked archive and keep independent releases. Neither Node.js nor Git is required on the servers.
 
@@ -12,20 +12,20 @@ checks and unit tests; standalone `npm test` still builds first.
 
 ## Local Docker verification
 
-From the repository root (requires Docker Compose and installed npm dependencies):
+From the repository root (requires Docker Compose; tasks install npm dependencies as needed):
 
 ```bash
-npm run check
-docker compose -f deploy/compose.local.yml up -d --wait
-docker compose -f deploy/compose.local.yml exec -T nginx nginx -t
-node scripts/check-http.mjs
+task check
+task nginx:up
+task nginx:check
+task nginx:logs # Optional: follow logs
 ```
 
 Open http://127.0.0.1:8088/ or http://127.0.0.1:8088/play/. The dedicated
 container uses a pinned official stable Nginx image, the exact deployment
 server/limit configurations, and read-only `dist/`; it binds only to loopback.
-Set `DDS_PORT=8089` before the Compose command to change the port, and pass
-`http://127.0.0.1:8089/` to the HTTP checker. Rebuild after source changes.
+Export `DDS_PORT=8089` to change the port for both nginx tasks and the HTTP
+checker. Run `task nginx:up` again after source changes.
 The HTTP checker validates every built file (including all localized scenes,
 sprites and audio), headers, routing and range requests; it does not test visual
 rendering or browser interaction.
@@ -33,7 +33,7 @@ rendering or browser interaction.
 Stop and remove only this local stack:
 
 ```bash
-docker compose -f deploy/compose.local.yml down
+task nginx:down
 ```
 
 ## VPS setup
