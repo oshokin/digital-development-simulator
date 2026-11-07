@@ -9,7 +9,7 @@ on:
         type: choice
         options:
           - ruweb
-          - itgarage
+          - it-garage
           - both
 
 permissions:
@@ -36,8 +36,8 @@ jobs:
         run: |
           case "$TARGET" in
             ruweb) echo 'value=["ruweb"]' >> "$GITHUB_OUTPUT" ;;
-            itgarage) echo 'value=["itgarage"]' >> "$GITHUB_OUTPUT" ;;
-            both) echo 'value=["ruweb","itgarage"]' >> "$GITHUB_OUTPUT" ;;
+            it-garage) echo 'value=["it-garage"]' >> "$GITHUB_OUTPUT" ;;
+            both) echo 'value=["ruweb","it-garage"]' >> "$GITHUB_OUTPUT" ;;
             *) exit 1 ;;
           esac
       - name: Pack this exact revision
